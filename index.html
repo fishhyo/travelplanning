@@ -1,58 +1,129 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Travel Master Pro</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        :root { --sab: env(safe-area-inset-bottom); --sat: env(safe-area-inset-top); }
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F8FAFC; -webkit-tap-highlight-color: transparent; }
-        .safe-area-bottom-scroll { padding-bottom: calc(var(--sab) + 160px) !important; }
-        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); }
-        .cat-tag { font-size: 0.65rem; padding: 2px 10px; border-radius: 99px; font-weight: 800; }
-        .cat-景點 { background: #dcfce7; color: #166534; }
-        .cat-美食 { background: #fee2e2; color: #991b1b; }
-        .cat-交通 { background: #e0f2fe; color: #075985; }
-        .cat-購物 { background: #fef3c7; color: #92400e; }
-        .cat-住宿 { background: #ede9fe; color: #5b21b6; }
-        .page-slide-enter-active, .page-slide-leave-active { transition: transform 0.3s ease, opacity 0.3s ease; }
-        .page-slide-enter-from { transform: translateX(100%); opacity: 0; }
-        .page-slide-leave-to { transform: translateX(-100%); opacity: 0; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        :root {
+            --sab: env(safe-area-inset-bottom);
+            --sat: env(safe-area-inset-top);
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #F8FAFC;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .safe-area-bottom-scroll {
+            padding-bottom: calc(var(--sab) + 160px) !important;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .cat-tag {
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 99px;
+            font-weight: 800;
+        }
+
+        .cat-景點 {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .cat-美食 {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .cat-交通 {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
+        .cat-購物 {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .cat-住宿 {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .page-slide-enter-active,
+        .page-slide-leave-active {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .page-slide-enter-from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .page-slide-leave-to {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
+
 <body>
     <div id="app" class="max-w-md mx-auto min-h-[100dvh] relative bg-slate-50 shadow-2xl flex flex-col overflow-hidden">
-        
+
         <transition name="page-slide">
             <!-- 1. 旅程列表 -->
-            <div v-if="!currentTrip && !showFormPage" class="absolute inset-0 p-6 overflow-y-auto no-scrollbar" key="list">
+            <div v-if="!currentTrip && !showFormPage" class="absolute inset-0 p-6 overflow-y-auto no-scrollbar"
+                key="list">
                 <div class="flex justify-between items-center mb-8" :style="{ paddingTop: 'var(--sat)' }">
                     <h1 class="text-3xl font-black text-slate-900 tracking-tighter">我的旅程</h1>
-                    <button @click="openForm(null)" class="w-12 h-12 bg-indigo-600 text-white rounded-2xl shadow-lg flex items-center justify-center active:scale-90 transition-transform">
+                    <button @click="openForm(null)"
+                        class="w-12 h-12 bg-indigo-600 text-white rounded-2xl shadow-lg flex items-center justify-center active:scale-90 transition-transform">
                         <i class="ph-bold ph-plus text-xl"></i>
                     </button>
                 </div>
 
                 <div class="space-y-4 pb-10">
-                    <div v-for="trip in trips" :key="trip.id" @click="selectTrip(trip)" 
-                         class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 active:bg-slate-50 transition-colors relative">
+                    <div v-for="trip in trips" :key="trip.id" @click="selectTrip(trip)"
+                        class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 active:bg-slate-50 transition-colors relative">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <h3 class="text-xl font-black text-slate-800 leading-tight">{{ trip.name || '未命名旅程' }}</h3>
-                                <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-widest flex items-center gap-1">
+                                <h3 class="text-xl font-black text-slate-800 leading-tight">{{ trip.name || '未命名旅程' }}
+                                </h3>
+                                <p
+                                    class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-widest flex items-center gap-1">
                                     <i class="ph-bold ph-map-pin"></i> {{ trip.destination }}
                                 </p>
                             </div>
-                            <button @click.stop="deleteTrip(trip.id)" class="text-slate-200 hover:text-red-400 p-2 transition-colors"><i class="ph-bold ph-trash"></i></button>
+                            <button @click.stop="deleteTrip(trip.id)"
+                                class="text-slate-200 hover:text-red-400 p-2 transition-colors"><i
+                                    class="ph-bold ph-trash"></i></button>
                         </div>
                         <div class="flex items-center justify-between mt-2">
-                            <span class="text-[10px] font-black text-slate-300">{{ trip.startDate }} - {{ trip.endDate }}</span>
-                            <span class="text-[9px] font-black bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg">{{ trip.baseCurrency }} → {{ trip.targetCurrency }}</span>
+                            <span class="text-[10px] font-black text-slate-300">{{ trip.startDate }} - {{ trip.endDate
+                                }}</span>
+                            <span class="text-[9px] font-black bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg">{{
+                                trip.baseCurrency }} → {{ trip.targetCurrency }}</span>
                         </div>
                     </div>
                 </div>
@@ -60,130 +131,265 @@
 
             <!-- 2. 新增 / 編輯頁面 -->
             <div v-else-if="showFormPage" class="absolute inset-0 bg-white z-[150] flex flex-col" key="form">
-                <header class="p-6 flex items-center justify-between border-b border-slate-50" :style="{ paddingTop: 'calc(var(--sat) + 1rem)' }">
+                <header class="p-6 flex items-center justify-between border-b border-slate-50"
+                    :style="{ paddingTop: 'calc(var(--sat) + 1rem)' }">
                     <div class="flex items-center gap-4">
-                        <button @click="showFormPage = false" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-full"><i class="ph-bold ph-arrow-left"></i></button>
+                        <button @click="showFormPage = false"
+                            class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-full"><i
+                                class="ph-bold ph-arrow-left"></i></button>
                         <h2 class="text-xl font-black text-slate-800">{{ isEditing ? '修改計畫' : '新增旅程' }}</h2>
                     </div>
                 </header>
                 <div class="flex-1 overflow-y-auto p-6 space-y-6 pb-10">
-                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">旅程名稱</label><input v-model="formTrip.name" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-lg focus:ring-2 ring-indigo-500"></div>
-                    <div class="relative"><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">目的地城市</label><input v-model="formTrip.destination" @input="searchDestinations" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-lg focus:ring-2 ring-indigo-500" placeholder="搜尋城市..."><div v-if="destSuggestions.length > 0" class="absolute z-[160] left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"><div v-for="s in destSuggestions" @click="selectSuggestion(s)" class="p-4 hover:bg-slate-50 cursor-pointer font-bold text-slate-800 border-b border-slate-50 last:border-0">{{ s.name }} ({{ s.country }})</div></div></div>
-                    <div class="grid grid-cols-2 gap-4"><div><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">開始日期</label><input v-model="formTrip.startDate" type="date" class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"></div><div><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">結束日期</label><input v-model="formTrip.endDate" type="date" class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"></div></div>
-                    <div class="bg-indigo-50 p-6 rounded-[32px] grid grid-cols-2 gap-4"><div><label class="text-[10px] font-black text-indigo-400 block mb-2">原始貨幣</label><select v-model="formTrip.baseCurrency" class="w-full p-3 bg-white rounded-xl font-bold text-xs"><option v-for="c in currencyList" :value="c">{{ c }}</option></select></div><div><label class="text-[10px] font-black text-indigo-400 block mb-2">外幣</label><select v-model="formTrip.targetCurrency" class="w-full p-3 bg-white rounded-xl font-bold text-xs"><option v-for="c in currencyList" :value="c">{{ c }}</option></select></div></div>
-                    <button @click="saveTrip" class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-indigo-100 active:scale-95 transition-transform">儲存旅程</button>
+                    <div><label
+                            class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">旅程名稱</label><input
+                            v-model="formTrip.name"
+                            class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-lg focus:ring-2 ring-indigo-500">
+                    </div>
+                    <div class="relative"><label
+                            class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">目的地城市</label><input
+                            v-model="formTrip.destination" @input="searchDestinations"
+                            class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-lg focus:ring-2 ring-indigo-500"
+                            placeholder="搜尋城市...">
+                        <div v-if="destSuggestions.length > 0"
+                            class="absolute z-[160] left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+                            <div v-for="s in destSuggestions" @click="selectSuggestion(s)"
+                                class="p-4 hover:bg-slate-50 cursor-pointer font-bold text-slate-800 border-b border-slate-50 last:border-0">
+                                {{ s.name }} ({{ s.country }})</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label
+                                class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">開始日期</label><input
+                                v-model="formTrip.startDate" type="date"
+                                class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"></div>
+                        <div><label
+                                class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">結束日期</label><input
+                                v-model="formTrip.endDate" type="date"
+                                class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"></div>
+                    </div>
+                    <div class="bg-indigo-50 p-6 rounded-[32px] grid grid-cols-2 gap-4">
+                        <div><label class="text-[10px] font-black text-indigo-400 block mb-2">原始貨幣</label><select
+                                v-model="formTrip.baseCurrency"
+                                class="w-full p-3 bg-white rounded-xl font-bold text-xs">
+                                <option v-for="c in currencyList" :value="c">{{ c }}</option>
+                            </select></div>
+                        <div><label class="text-[10px] font-black text-indigo-400 block mb-2">外幣</label><select
+                                v-model="formTrip.targetCurrency"
+                                class="w-full p-3 bg-white rounded-xl font-bold text-xs">
+                                <option v-for="c in currencyList" :value="c">{{ c }}</option>
+                            </select></div>
+                    </div>
+                    <button @click="saveTrip"
+                        class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-indigo-100 active:scale-95 transition-transform">儲存旅程</button>
                 </div>
             </div>
 
             <!-- 3. 詳細頁面 -->
             <div v-else class="absolute inset-0 flex flex-col bg-slate-50" key="detail">
-                <header class="flex-none z-[60] bg-white/80 backdrop-blur-md px-6 py-4 flex justify-between items-center border-b border-slate-50" :style="{ paddingTop: 'calc(var(--sat) + 1rem)' }">
-                    <div class="flex items-center gap-3"><button @click="currentTrip = null" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center"><i class="ph-bold ph-caret-left"></i></button><div><h2 class="font-black text-slate-800 leading-none">{{ currentViewTitle }}</h2><p class="text-[9px] text-slate-400 font-bold uppercase mt-1 truncate w-40">{{ currentTrip.name }}</p></div></div>
-                    <div class="flex gap-2"><button v-if="activeTab === 'itinerary' && currentDay !== null" @click="showWeatherDetail = true" class="text-indigo-600"><i class="ph-fill ph-cloud-sun text-2xl"></i></button><button @click="openForm(currentTrip)" class="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center text-slate-400"><i class="ph-bold ph-gear"></i></button></div>
+                <header
+                    class="flex-none z-[60] bg-white/80 backdrop-blur-md px-6 py-4 flex justify-between items-center border-b border-slate-50"
+                    :style="{ paddingTop: 'calc(var(--sat) + 1rem)' }">
+                    <div class="flex items-center gap-3"><button @click="currentTrip = null"
+                            class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center"><i
+                                class="ph-bold ph-caret-left"></i></button>
+                        <div>
+                            <h2 class="font-black text-slate-800 leading-none">{{ currentViewTitle }}</h2>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase mt-1 truncate w-40">{{
+                                currentTrip.name }}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2"><button v-if="activeTab === 'itinerary' && currentDay !== null"
+                            @click="showWeatherDetail = true" class="text-indigo-600"><i
+                                class="ph-fill ph-cloud-sun text-2xl"></i></button><button
+                            @click="openForm(currentTrip)"
+                            class="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center text-slate-400"><i
+                                class="ph-bold ph-gear"></i></button></div>
                 </header>
 
                 <main class="flex-1 overflow-y-auto safe-area-bottom-scroll p-4 no-scrollbar">
                     <!-- 行程規劃 -->
                     <section v-if="activeTab === 'itinerary'">
                         <div v-if="currentDay === null" class="space-y-3">
-                            <div v-for="(day, idx) in currentTrip.itinerary" @click="currentDay = idx" class="bg-white p-5 rounded-[28px] border border-slate-100 flex justify-between items-center shadow-sm">
-                                <div class="flex items-center gap-4"><div class="w-12 h-12 bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-white"><span class="text-[8px] font-black opacity-40">DAY</span><span class="text-lg font-black leading-none">{{idx+1}}</span></div><div><div class="font-black text-slate-700">{{ day.dateDisplay }}</div><div v-if="day.weather" class="text-[10px] text-indigo-500 font-bold">{{ day.weather.condition }} {{ day.weather.tempMax }}°</div></div></div>
+                            <div v-for="(day, idx) in currentTrip.itinerary" @click="currentDay = idx"
+                                class="bg-white p-5 rounded-[28px] border border-slate-100 flex justify-between items-center shadow-sm">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-12 h-12 bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-white">
+                                        <span class="text-[8px] font-black opacity-40">DAY</span><span
+                                            class="text-lg font-black leading-none">{{idx+1}}</span></div>
+                                    <div>
+                                        <div class="font-black text-slate-700">{{ day.dateDisplay }}</div>
+                                        <div v-if="day.weather" class="text-[10px] text-indigo-500 font-bold">{{
+                                            day.weather.condition }} {{ day.weather.tempMax }}°</div>
+                                    </div>
+                                </div>
                                 <i class="ph-bold ph-caret-right text-slate-200"></i>
                             </div>
                         </div>
                         <div v-else class="space-y-4">
-                            <button @click="currentDay = null" class="text-xs font-black text-indigo-600 flex items-center gap-1"><i class="ph-bold ph-arrow-left"></i> 返回天數</button>
-                            
+                            <button @click="currentDay = null"
+                                class="text-xs font-black text-indigo-600 flex items-center gap-1"><i
+                                    class="ph-bold ph-arrow-left"></i> 返回天數</button>
+
                             <!-- 每日行程概要欄位 -->
                             <div class="bg-indigo-50 p-4 rounded-3xl border border-indigo-100 mb-2">
                                 <div class="flex items-center gap-2 mb-2">
                                     <i class="ph-fill ph-note-pencil text-indigo-600"></i>
-                                    <span class="text-[10px] font-black text-indigo-900 uppercase tracking-widest">今日行程概要</span>
+                                    <span
+                                        class="text-[10px] font-black text-indigo-900 uppercase tracking-widest">今日行程概要</span>
                                 </div>
-                                <textarea v-model="currentTrip.itinerary[currentDay].summary" class="w-full bg-transparent text-sm font-bold text-indigo-800 outline-none placeholder:text-indigo-200" rows="2" placeholder="輸入今天的重點筆記..."></textarea>
+                                <textarea v-model="currentTrip.itinerary[currentDay].summary"
+                                    class="w-full bg-transparent text-sm font-bold text-indigo-800 outline-none placeholder:text-indigo-200"
+                                    rows="2" placeholder="輸入今天的重點筆記..."></textarea>
                             </div>
 
-                            <div v-for="(spot, sIdx) in sortedSpots" :key="sIdx" class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
-                                <div class="flex justify-between items-center mb-4"><div class="flex gap-2"><input v-model="spot.time" type="time" class="font-mono font-bold text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg outline-none"><select v-model="spot.category" :class="'cat-'+spot.category" class="cat-tag outline-none appearance-none"><option v-for="c in categories" :value="c">{{c}}</option></select></div><button @click="removeSpot(spot)" class="text-slate-200"><i class="ph-bold ph-trash"></i></button></div>
-                                <input v-model="spot.activity" class="w-full font-black text-slate-800 text-lg mb-2 outline-none" placeholder="項目內容...">
-                                <textarea v-model="spot.note" class="w-full text-[10px] text-slate-400 bg-transparent outline-none mb-2" rows="2" placeholder="備註..."></textarea>
-                                <div class="flex gap-2"><input v-model="spot.address" class="flex-1 bg-slate-50 px-3 py-2 rounded-xl text-[10px] font-bold outline-none" placeholder="地址..."><button @click="openGoogleMap(spot.address || spot.activity)" class="w-10 h-10 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg"><i class="ph-bold ph-navigation-arrow"></i></button></div>
+                            <div v-for="(spot, sIdx) in sortedSpots" :key="sIdx"
+                                class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="flex gap-2"><input v-model="spot.time" type="time"
+                                            class="font-mono font-bold text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg outline-none"><select
+                                            v-model="spot.category" :class="'cat-'+spot.category"
+                                            class="cat-tag outline-none appearance-none">
+                                            <option v-for="c in categories" :value="c">{{c}}</option>
+                                        </select></div><button @click="removeSpot(spot)" class="text-slate-200"><i
+                                            class="ph-bold ph-trash"></i></button>
+                                </div>
+                                <input v-model="spot.activity"
+                                    class="w-full font-black text-slate-800 text-lg mb-2 outline-none"
+                                    placeholder="項目內容...">
+                                <textarea v-model="spot.note"
+                                    class="w-full text-[10px] text-slate-400 bg-transparent outline-none mb-2" rows="2"
+                                    placeholder="備註..."></textarea>
+                                <div class="flex gap-2"><input v-model="spot.address"
+                                        class="flex-1 bg-slate-50 px-3 py-2 rounded-xl text-[10px] font-bold outline-none"
+                                        placeholder="地址..."><button
+                                        @click="openGoogleMap(spot.address || spot.activity)"
+                                        class="w-10 h-10 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg"><i
+                                            class="ph-bold ph-navigation-arrow"></i></button></div>
                             </div>
-                            <button @click="addSpot" class="w-full py-8 border-2 border-dashed border-slate-200 rounded-[32px] text-slate-300 font-black uppercase text-xs">+ 新增規劃</button>
+                            <button @click="addSpot"
+                                class="w-full py-8 border-2 border-dashed border-slate-200 rounded-[32px] text-slate-300 font-black uppercase text-xs">+
+                                新增規劃</button>
                         </div>
                     </section>
-                    
+
                     <!-- 行程文件分頁 -->
                     <section v-if="activeTab === 'documents'" class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
-                            <button @click="$refs.fileInput.click()" class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2">
+                            <button @click="$refs.fileInput.click()"
+                                class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2">
                                 <i class="ph-bold ph-image text-2xl text-indigo-600"></i>
                                 <span class="text-[10px] font-bold uppercase">上載文件/相片</span>
                                 <!-- 支援廣泛格式：heic, png, jpg, pdf -->
-                                <input type="file" ref="fileInput" class="hidden" accept=".heic,image/png,image/jpeg,image/jpg,application/pdf" @change="uploadFile">
+                                <input type="file" ref="fileInput" class="hidden"
+                                    accept=".heic,image/png,image/jpeg,image/jpg,application/pdf" @change="uploadFile">
                             </button>
-                            <button @click="addLinkPrompt" class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2">
+                            <button @click="addLinkPrompt"
+                                class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2">
                                 <i class="ph-bold ph-link text-2xl text-indigo-600"></i>
                                 <span class="text-[10px] font-bold uppercase">新增網頁連結</span>
                             </button>
                         </div>
                         <div class="space-y-3">
                             <h3 class="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">我的文件庫</h3>
-                            <div v-for="(doc, dIdx) in currentTrip.documents" :key="dIdx" class="bg-white p-4 rounded-3xl border border-slate-100 flex items-center justify-between shadow-sm">
+                            <div v-for="(doc, dIdx) in currentTrip.documents" :key="dIdx"
+                                class="bg-white p-4 rounded-3xl border border-slate-100 flex items-center justify-between shadow-sm">
                                 <div class="flex items-center gap-4 flex-1 overflow-hidden" @click="openDoc(doc)">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-indigo-600">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-indigo-600">
                                         <i v-if="doc.type === 'link'" class="ph-bold ph-link"></i>
                                         <i v-else-if="doc.type === 'pdf'" class="ph-bold ph-file-pdf"></i>
                                         <i v-else class="ph-bold ph-image-square"></i>
                                     </div>
-                                    <div class="truncate"><p class="font-bold text-slate-800 text-sm truncate">{{ doc.name }}</p></div>
+                                    <div class="truncate">
+                                        <p class="font-bold text-slate-800 text-sm truncate">{{ doc.name }}</p>
+                                    </div>
                                 </div>
-                                <button @click="currentTrip.documents.splice(dIdx, 1)" class="text-slate-200 ml-4"><i class="ph-bold ph-x-circle text-xl"></i></button>
+                                <button @click="currentTrip.documents.splice(dIdx, 1)" class="text-slate-200 ml-4"><i
+                                        class="ph-bold ph-x-circle text-xl"></i></button>
                             </div>
                         </div>
                     </section>
 
                     <!-- 航班頁面 -->
                     <section v-if="activeTab === 'flight'" class="space-y-6">
-                        <div v-for="(f, fIdx) in currentTrip.flights" class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative">
-                            <div class="flex justify-between items-center mb-6"><input v-model="f.no" class="font-mono font-black text-2xl text-slate-900 uppercase w-full outline-none" placeholder="航班號"><button @click="currentTrip.flights.splice(fIdx, 1)" class="text-slate-200"><i class="ph-bold ph-trash"></i></button></div>
+                        <div v-for="(f, fIdx) in currentTrip.flights"
+                            class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative">
+                            <div class="flex justify-between items-center mb-6"><input v-model="f.no"
+                                    class="font-mono font-black text-2xl text-slate-900 uppercase w-full outline-none"
+                                    placeholder="航班號"><button @click="currentTrip.flights.splice(fIdx, 1)"
+                                    class="text-slate-200"><i class="ph-bold ph-trash"></i></button></div>
                             <div class="grid grid-cols-2 gap-6">
                                 <div class="space-y-3">
                                     <p class="text-[10px] font-black text-slate-400 uppercase">出發</p>
                                     <input v-model="f.from" class="text-3xl font-black w-full outline-none">
                                     <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2">
                                         <span class="text-[8px] font-black text-slate-300">Terminal</span>
-                                        <input v-model="f.fromTerminal" class="w-full bg-transparent text-[10px] font-black py-1" placeholder="航廈">
+                                        <input v-model="f.fromTerminal"
+                                            class="w-full bg-transparent text-[10px] font-black py-1" placeholder="航廈">
                                     </div>
-                                    <input v-model="f.fromTime" type="time" class="text-sm font-bold w-full text-indigo-600 outline-none">
+                                    <input v-model="f.fromTime" type="time"
+                                        class="text-sm font-bold w-full text-indigo-600 outline-none">
                                 </div>
                                 <div class="space-y-3 text-right">
                                     <p class="text-[10px] font-black text-slate-400 uppercase">到達</p>
-                                    <input v-model="f.to" class="text-3xl font-black w-full text-right outline-none text-indigo-600">
+                                    <input v-model="f.to"
+                                        class="text-3xl font-black w-full text-right outline-none text-indigo-600">
                                     <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2 flex-row-reverse">
                                         <span class="text-[8px] font-black text-slate-300">Terminal</span>
-                                        <input v-model="f.toTerminal" class="w-full bg-transparent text-[10px] font-black py-1 text-right" placeholder="航廈">
+                                        <input v-model="f.toTerminal"
+                                            class="w-full bg-transparent text-[10px] font-black py-1 text-right"
+                                            placeholder="航廈">
                                     </div>
-                                    <input v-model="f.toTime" type="time" class="text-sm font-bold w-full text-right text-indigo-600 outline-none">
+                                    <input v-model="f.toTime" type="time"
+                                        class="text-sm font-bold w-full text-right text-indigo-600 outline-none">
                                 </div>
                             </div>
                         </div>
-                        <button @click="addFlight" class="w-full py-4 rounded-2xl bg-slate-900 text-white text-xs font-black uppercase">+ 新增航班</button>
+                        <button @click="addFlight"
+                            class="w-full py-4 rounded-2xl bg-slate-900 text-white text-xs font-black uppercase">+
+                            新增航班</button>
                     </section>
 
                     <!-- 記帳頁面 -->
                     <section v-if="activeTab === 'expense'" class="space-y-4">
                         <div class="bg-slate-900 p-8 rounded-[40px] text-white shadow-xl relative overflow-hidden">
-                            <div class="relative z-10"><p class="text-[10px] font-black text-slate-400 uppercase mb-1">總支出 ({{ currentTrip.targetCurrency }})</p><div class="text-4xl font-black mb-1">{{ totalTargetAmount.toLocaleString() }}</div><div class="text-sm font-bold text-slate-500">≈ {{ currentTrip.baseCurrency }} {{ totalBaseAmount }}</div><div class="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center text-[10px] font-black text-slate-500 uppercase"><span>匯率: 1 {{ currentTrip.baseCurrency }} = {{ exchangeRate }} {{ currentTrip.targetCurrency }}</span></div></div>
+                            <div class="relative z-10">
+                                <p class="text-[10px] font-black text-slate-400 uppercase mb-1">總支出 ({{
+                                    currentTrip.targetCurrency }})</p>
+                                <div class="text-4xl font-black mb-1">{{ totalTargetAmount.toLocaleString() }}</div>
+                                <div class="text-sm font-bold text-slate-500">≈ {{ currentTrip.baseCurrency }} {{
+                                    totalBaseAmount }}</div>
+                                <div
+                                    class="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center text-[10px] font-black text-slate-500 uppercase">
+                                    <span>匯率: 1 {{ currentTrip.baseCurrency }} = {{ exchangeRate }} {{
+                                        currentTrip.targetCurrency }}</span></div>
+                            </div>
                             <i class="ph-bold ph-coins absolute -right-4 -bottom-4 text-8xl opacity-10 rotate-12"></i>
                         </div>
                         <div class="bg-white rounded-[32px] overflow-hidden border border-slate-100">
-                            <div v-for="(exp, eIdx) in currentTrip.expenses" class="p-4 border-b border-slate-50 flex items-center gap-4">
-                                <div class="flex-1"><input v-model="exp.item" class="w-full font-bold text-sm outline-none" placeholder="項目..."><div class="flex items-center gap-2 mt-1"><span class="text-[8px] font-black text-indigo-400 bg-indigo-50 px-1.5 py-0.5 rounded">{{ exp.timestamp }}</span><input v-model="exp.note" class="flex-1 text-[9px] text-slate-400 outline-none bg-transparent" placeholder="備註..."></div></div>
-                                <div class="flex items-center bg-slate-50 px-3 py-2 rounded-xl"><span class="text-[10px] font-black text-slate-300 mr-1">{{ currentTrip.targetCurrency }}</span><input v-model.number="exp.amount" type="number" class="w-16 text-right font-black text-slate-800 bg-transparent outline-none"></div>
-                                <button @click="currentTrip.expenses.splice(eIdx, 1)" class="text-slate-200"><i class="ph-bold ph-minus-circle"></i></button>
+                            <div v-for="(exp, eIdx) in currentTrip.expenses"
+                                class="p-4 border-b border-slate-50 flex items-center gap-4">
+                                <div class="flex-1"><input v-model="exp.item"
+                                        class="w-full font-bold text-sm outline-none" placeholder="項目...">
+                                    <div class="flex items-center gap-2 mt-1"><span
+                                            class="text-[8px] font-black text-indigo-400 bg-indigo-50 px-1.5 py-0.5 rounded">{{
+                                            exp.timestamp }}</span><input v-model="exp.note"
+                                            class="flex-1 text-[9px] text-slate-400 outline-none bg-transparent"
+                                            placeholder="備註..."></div>
+                                </div>
+                                <div class="flex items-center bg-slate-50 px-3 py-2 rounded-xl"><span
+                                        class="text-[10px] font-black text-slate-300 mr-1">{{ currentTrip.targetCurrency
+                                        }}</span><input v-model.number="exp.amount" type="number"
+                                        class="w-16 text-right font-black text-slate-800 bg-transparent outline-none">
+                                </div>
+                                <button @click="currentTrip.expenses.splice(eIdx, 1)" class="text-slate-200"><i
+                                        class="ph-bold ph-minus-circle"></i></button>
                             </div>
-                            <button @click="addExpense" class="w-full py-5 text-indigo-600 font-black text-xs uppercase tracking-widest">+ 點擊新增紀錄</button>
+                            <button @click="addExpense"
+                                class="w-full py-5 text-indigo-600 font-black text-xs uppercase tracking-widest">+
+                                點擊新增紀錄</button>
                         </div>
                     </section>
 
@@ -197,19 +403,29 @@
                             </div>
                             <div class="space-y-4 mb-6">
                                 <div class="grid grid-cols-2 gap-2">
-                                    <input v-model="newGourmet.type" class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold" placeholder="類型 (如: 燒肉)">
-                                    <input v-model="newGourmet.name" class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold" placeholder="店家名稱">
+                                    <input v-model="newGourmet.type"
+                                        class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold"
+                                        placeholder="類型 (如: 燒肉)">
+                                    <input v-model="newGourmet.name"
+                                        class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold"
+                                        placeholder="店家名稱">
                                 </div>
                                 <div class="flex gap-2">
-                                    <input v-model="newGourmet.location" class="flex-1 bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold" placeholder="地點或地址">
-                                    <button @click="addGourmetItem" class="bg-rose-500 text-white px-6 rounded-xl text-xs font-black">ADD</button>
+                                    <input v-model="newGourmet.location"
+                                        class="flex-1 bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold"
+                                        placeholder="地點或地址">
+                                    <button @click="addGourmetItem"
+                                        class="bg-rose-500 text-white px-6 rounded-xl text-xs font-black">ADD</button>
                                 </div>
                             </div>
                             <div class="space-y-3">
-                                <div v-for="(item, idx) in currentTrip.gourmetList" :key="idx" class="p-3 bg-slate-50 rounded-2xl flex items-center justify-between">
+                                <div v-for="(item, idx) in currentTrip.gourmetList" :key="idx"
+                                    class="p-3 bg-slate-50 rounded-2xl flex items-center justify-between">
                                     <div class="flex items-center gap-3 overflow-hidden">
-                                        <button @click="item.tried = !item.tried" :class="item.tried ? 'text-rose-500' : 'text-slate-200'">
-                                            <i :class="item.tried ? 'ph-fill ph-check-circle' : 'ph-bold ph-circle'" class="text-2xl"></i>
+                                        <button @click="item.tried = !item.tried"
+                                            :class="item.tried ? 'text-rose-500' : 'text-slate-200'">
+                                            <i :class="item.tried ? 'ph-fill ph-check-circle' : 'ph-bold ph-circle'"
+                                                class="text-2xl"></i>
                                         </button>
                                         <div class="overflow-hidden">
                                             <p class="text-xs font-black text-rose-600 uppercase">{{ item.type }}</p>
@@ -217,8 +433,11 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <button v-if="item.location" @click="openGoogleMap(item.location)" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-green-500 shadow-sm"><i class="ph-bold ph-map-pin"></i></button>
-                                        <button @click="currentTrip.gourmetList.splice(idx, 1)" class="text-slate-300"><i class="ph-bold ph-trash"></i></button>
+                                        <button v-if="item.location" @click="openGoogleMap(item.location)"
+                                            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-green-500 shadow-sm"><i
+                                                class="ph-bold ph-map-pin"></i></button>
+                                        <button @click="currentTrip.gourmetList.splice(idx, 1)"
+                                            class="text-slate-300"><i class="ph-bold ph-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -231,16 +450,23 @@
                                 <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">必買清單</h3>
                             </div>
                             <div class="flex gap-2 mb-6">
-                                <input v-model="newShopItem" @keyup.enter="addShopItem" class="flex-1 bg-slate-50 px-4 py-3 rounded-xl outline-none text-xs font-bold" placeholder="想買什麼？">
-                                <button @click="addShopItem" class="bg-indigo-600 text-white px-6 rounded-xl text-xs font-black shadow-lg">ADD</button>
+                                <input v-model="newShopItem" @keyup.enter="addShopItem"
+                                    class="flex-1 bg-slate-50 px-4 py-3 rounded-xl outline-none text-xs font-bold"
+                                    placeholder="想買什麼？">
+                                <button @click="addShopItem"
+                                    class="bg-indigo-600 text-white px-6 rounded-xl text-xs font-black shadow-lg">ADD</button>
                             </div>
                             <div class="space-y-1">
-                                <div v-for="(item, idx) in currentTrip.shoppingList" class="flex items-center justify-between p-3 active:bg-slate-50 rounded-2xl transition-all">
+                                <div v-for="(item, idx) in currentTrip.shoppingList"
+                                    class="flex items-center justify-between p-3 active:bg-slate-50 rounded-2xl transition-all">
                                     <div class="flex items-center gap-4 flex-1" @click="item.bought = !item.bought">
-                                        <i :class="item.bought ? 'ph-fill ph-check-square text-indigo-600' : 'ph-bold ph-square text-slate-200'" class="text-2xl"></i>
-                                        <span :class="item.bought ? 'line-through text-slate-300' : 'text-slate-700'" class="font-bold text-sm">{{ item.name }}</span>
+                                        <i :class="item.bought ? 'ph-fill ph-check-square text-indigo-600' : 'ph-bold ph-square text-slate-200'"
+                                            class="text-2xl"></i>
+                                        <span :class="item.bought ? 'line-through text-slate-300' : 'text-slate-700'"
+                                            class="font-bold text-sm">{{ item.name }}</span>
                                     </div>
-                                    <button @click="currentTrip.shoppingList.splice(idx, 1)" class="text-slate-200 p-2"><i class="ph-bold ph-trash"></i></button>
+                                    <button @click="currentTrip.shoppingList.splice(idx, 1)"
+                                        class="text-slate-200 p-2"><i class="ph-bold ph-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -248,16 +474,42 @@
                 </main>
 
                 <!-- 底部導覽 -->
-                <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass px-4 flex justify-between items-center z-[100] rounded-t-[40px]" :style="{ paddingBottom: 'calc(var(--sab) + 1.2rem)', paddingTop: '0.8rem' }">
-                    <button v-for="tab in tabs" @click="activeTab = tab.id" :class="activeTab === tab.id ? 'text-indigo-600' : 'text-slate-300'" class="flex flex-col items-center gap-1 flex-1 transition-all"><i :class="[activeTab === tab.id ? 'ph-fill' : 'ph-bold', tab.icon]" class="text-2xl"></i><span class="text-[8px] font-black uppercase tracking-widest">{{ tab.name }}</span></button>
+                <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass px-4 flex justify-between items-center z-[100] rounded-t-[40px]"
+                    :style="{ paddingBottom: 'calc(var(--sab) + 1.2rem)', paddingTop: '0.8rem' }">
+                    <button v-for="tab in tabs" @click="activeTab = tab.id"
+                        :class="activeTab === tab.id ? 'text-indigo-600' : 'text-slate-300'"
+                        class="flex flex-col items-center gap-1 flex-1 transition-all"><i
+                            :class="[activeTab === tab.id ? 'ph-fill' : 'ph-bold', tab.icon]" class="text-2xl"></i><span
+                            class="text-[8px] font-black uppercase tracking-widest">{{ tab.name }}</span></button>
                 </nav>
             </div>
         </transition>
 
         <!-- 天氣詳細彈窗 -->
-        <div v-if="showWeatherDetail" class="fixed inset-0 z-[200] bg-white flex flex-col" :style="{ paddingTop: 'var(--sat)' }">
-            <header class="p-6 flex justify-between items-center border-b"><h2 class="text-xl font-black text-slate-800">天氣詳情</h2><button @click="showWeatherDetail = false" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center"><i class="ph-bold ph-x"></i></button></header>
-            <div class="p-8 flex-1 overflow-y-auto" v-if="currentDayWeather"><div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-[40px] text-white shadow-xl mb-8"><div class="text-6xl font-black mb-4">{{ Math.round(currentDayWeather.tempMax) }}°</div><p class="text-xl font-bold mb-6">{{ currentDayWeather.condition }}</p><div class="grid grid-cols-2 gap-4 border-t border-white/20 pt-6"><div><p class="text-[10px] opacity-60 uppercase mb-1">高 / 低</p><p class="font-bold">{{ currentDayWeather.tempMax }}° / {{ currentDayWeather.tempMin }}°</p></div><div><p class="text-[10px] opacity-60 uppercase mb-1">降雨機率</p><p class="font-bold">{{ currentDayWeather.rainProb }}%</p></div></div></div></div>
+        <div v-if="showWeatherDetail" class="fixed inset-0 z-[200] bg-white flex flex-col"
+            :style="{ paddingTop: 'var(--sat)' }">
+            <header class="p-6 flex justify-between items-center border-b">
+                <h2 class="text-xl font-black text-slate-800">天氣詳情</h2><button @click="showWeatherDetail = false"
+                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center"><i
+                        class="ph-bold ph-x"></i></button>
+            </header>
+            <div class="p-8 flex-1 overflow-y-auto" v-if="currentDayWeather">
+                <div
+                    class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-[40px] text-white shadow-xl mb-8">
+                    <div class="text-6xl font-black mb-4">{{ Math.round(currentDayWeather.tempMax) }}°</div>
+                    <p class="text-xl font-bold mb-6">{{ currentDayWeather.condition }}</p>
+                    <div class="grid grid-cols-2 gap-4 border-t border-white/20 pt-6">
+                        <div>
+                            <p class="text-[10px] opacity-60 uppercase mb-1">高 / 低</p>
+                            <p class="font-bold">{{ currentDayWeather.tempMax }}° / {{ currentDayWeather.tempMin }}°</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] opacity-60 uppercase mb-1">降雨機率</p>
+                            <p class="font-bold">{{ currentDayWeather.rainProb }}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -276,7 +528,7 @@
                 const exchangeRate = ref(1);
                 const destSuggestions = ref([]);
                 const searchLoading = ref(false);
-                
+
                 const newShopItem = ref('');
                 const newGourmet = reactive({ type: '', name: '', location: '' });
 
@@ -314,58 +566,86 @@
                         destLat: 33.5902,
                         destLng: 130.4017,
                         itinerary: [
-                            { dateDisplay: "2月10日 (二)", spots: [
-                                { time: "12:30", category: "交通", activity: "機場至飯店 (Hotel Wa Hakata)", address: "HOTEL WA HAKATA 7-3 Tenyamachi, Hakata Ward, Fukuoka, 812-0025日本", note: "機場接駁車至國內航廈 - 機場線地鐵 - 中洲川端站 - 步行8分鐘" },
-                                { time: "14:00", category: "美食", activity: "Lunch", address: "博多シーフードうお田", note: "明太子丼飯" },
-                                { time: "15:30", category: "購物", activity: "Parco 行街", address: "2 Chome-11-1 Tenjin, Chuo Ward, Fukuoka, 810-0001日本", note: "" },
-                                { time: "16:30", category: "購物", activity: "Mina 行街", address: "Mina 天神", note: "" },
-                                { time: "19:00", category: "美食", activity: "Dinner", address: "一蘭拉麵 總本店", note: "" }
-                            ]},
-                            { dateDisplay: "2月11日 (三)", spots: [
-                                { time: "10:00", category: "美食", activity: "breakfast", address: "藍瓶咖啡 福岡天神店 ", note: "coffee shop" },
-                                { time: "11:00", category: "購物", activity: "Shopping", address: "BILLY'S FUKUOKA", note: "睇鞋" },
-                                { time: "11:30", category: "購物", activity: "Shopping", address: "Kinetics Fukuoka", note: "睇鞋" },
-                                { time: "13:00", category: "美食", activity: "Lunch", address: "", note: "" },
-                                { time: "15:00", category: "購物", activity: "shopping", address: "天神地下街", note: "" },
-                                { time: "19:00", category: "美食", activity: "Dinner", address: "葫蘆壽司", note: "壽司" }
-                            ] },
-                            { dateDisplay: "2月12日 (四)", spots: [
-                                { time: "10:00", category: "美食", activity: "breakfast", address: "Dacomecca", note: "coffee shop" },
-                                { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
-                                { time: "17:05", category: "交通", activity: "Sam 抵達福岡", address: "FUK Airport", note: "Sam arrive @17:05" },
-                                { time: "19:30", category: "美食", activity: "Dinner @燒肉", address: "Nikuyaki Benjamin", note: "要BOOK枱!!!! https://www.tablecheck.com/en/nikuyaki-benjamin/reserve/menu" }
-                            ]},
-                            { dateDisplay: "2月13日 (五)", spots: [
-                                { time: "09:00", category: "交通", activity: "Car Pick up", address: "日本,福岡,Fukuoka Fukuoka-shi 1-12-7 Hakataekihigashi, Hakata-ku", note: "博多站新幹線築紫口" },
-                                { time: "10:30", category: "景點", activity: "太宰府天滿宮", address: "太宰府天滿宮", note: "" },
-                                { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
-                                { time: "14:00", category: "景點", activity: "浮羽稻荷神社", address: "浮羽稻荷神社", note: "" },
-                                { time: "16:00", category: "購物", activity: "鳥栖 Outlet", address: "Tosu Premium Outlets", note: "" },
-                                { time: "18:30", category: "美食", activity: "Dinner @ Outlet", address: "Tosu Premium Outlets", note: "" }
-                            ]},
-                            { dateDisplay: "2月14日 (六)", spots: [
-                                { time: "10:00", category: "景點", activity: "糸島 (Itoshima)", address: "糸島", note: "" },
-                                { time: "12:30", category: "美食", activity: "Lunch 糸島海鮮堂", address: "糸島海鮮堂 二見ヶ浦本店", note: "需預約: https://www.itoshima-seafoodrestaurant.com/res/day.php?date=2026-02-14" },
-                                { time: "14:30", category: "景點", activity: "櫻井二見ヶ浦 / 二丈福井", address: "Sakurai Futamigaura's Couple Stones", note: "夫妻石" },
-                                { time: "16:00", category: "景點", activity: "白絲瀑布", address: "白絲瀑布", note: "460-6 Shiraito, Itoshima, Fukuoka 819-1154日本" },
-                                { time: "18:30", category: "交通", activity: "19:00 前還車", address: "日本,福岡,Fukuoka Fukuoka-shi 1-12-7 Hakataekihigashi, Hakata-ku", note: "博多站新幹線築紫口" },
-                                { time: "19:30", category: "美食", activity: "Dinner @博多站", address: "博多站", note: "麵屋街，一番街，阪急foodcourt" },
-                                { time: "20:30", category: "購物", activity: "博多站附近商場", address: "博多站", note: "阪急百貨，AMU PLAZA，kitte0101（駿河屋），巴士總站樓上商場（一番賞，扭蛋，namco）" }
+                            {
+                                dateDisplay: "2月10日 (二)",
+                                summary: "到達福岡 → 入住 Hotel Wa Hakata → 午餐博多海鮮うお田 → 天神 Parco / Mina 逛街 → 晚餐一蘭總店", 
+                                spots: [
+                                    { time: "12:30", category: "交通", activity: "機場至酒店 (Hotel Wa Hakata)", address: "HOTEL WA HAKATA 7-3 Tenyamachi, Hakata Ward, Fukuoka, 812-0025日本", note: "機場線地鐵 - 中洲川端站（4個站） - 步行8分鐘" },
+                                    { time: "14:00", category: "美食", activity: "Lunch", address: "博多シーフードうお田", note: "明太子丼飯" },
+                                    { time: "15:30", category: "購物", activity: "Parco 行街", address: "2 Chome-11-1 Tenjin, Chuo Ward, Fukuoka, 810-0001日本", note: "" },
+                                    { time: "16:30", category: "購物", activity: "Mina 行街", address: "Mina 天神", note: "" },
+                                    { time: "19:00", category: "美食", activity: "Dinner", address: "一蘭拉麵 總本店", note: "" }
+                                ]
+                            },
+                            {
+                                dateDisplay: "2月11日 (三)", 
+                                summary: "藍瓶早餐 → 鞋店 BILLY’S / Kinetics → 天神地下街購物 → 晚餐葫蘆壽司",
+                                spots: [
+                                    { time: "10:00", category: "美食", activity: "breakfast", address: "藍瓶咖啡 福岡天神店 ", note: "coffee shop" },
+                                    { time: "11:00", category: "購物", activity: "Shopping", address: "BILLY'S FUKUOKA", note: "睇鞋" },
+                                    { time: "11:30", category: "購物", activity: "Shopping", address: "Kinetics Fukuoka", note: "睇鞋" },
+                                    { time: "13:00", category: "美食", activity: "Lunch", address: "", note: "" },
+                                    { time: "15:00", category: "購物", activity: "shopping", address: "天神地下街", note: "" },
+                                    { time: "19:00", category: "美食", activity: "Dinner", address: "葫蘆壽司", note: "壽司" }
+                                ]
+                            },
+                            {
+                                dateDisplay: "2月12日 (四)", 
+                                summary: "Dacomecca 早餐 → 午餐（待定）→ Sam 17:05 抵達 → 晚餐燒肉 Nikuyaki Benjamin（需訂位）",
+                                spots: [
+                                    { time: "10:00", category: "美食", activity: "breakfast", address: "Dacomecca", note: "coffee shop" },
+                                    { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
+                                    { time: "17:05", category: "交通", activity: "Sam 抵達福岡", address: "FUK Airport", note: "Sam arrive @17:05" },
+                                    { time: "19:30", category: "美食", activity: "Dinner @燒肉", address: "Nikuyaki Benjamin", note: "要BOOK枱!!!! https://www.tablecheck.com/en/nikuyaki-benjamin/reserve/menu" }
+                                ]
+                            },
+                            {
+                                dateDisplay: "2月13日 (五)", 
+                                summary: "博多站取車 → 太宰府天滿宮 → 午餐（待定）→ 浮羽稻荷神社 → 鳥栖 Outlet 購物＋晚餐",
+                                spots: [
+                                    { time: "09:00", category: "交通", activity: "Car Pick up", address: "日本,福岡,Fukuoka Fukuoka-shi 1-12-7 Hakataekihigashi, Hakata-ku", note: "博多站新幹線築紫口" },
+                                    { time: "10:30", category: "景點", activity: "太宰府天滿宮", address: "太宰府天滿宮", note: "" },
+                                    { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
+                                    { time: "14:00", category: "景點", activity: "浮羽稻荷神社", address: "浮羽稻荷神社", note: "" },
+                                    { time: "16:00", category: "購物", activity: "鳥栖 Outlet", address: "Tosu Premium Outlets", note: "" },
+                                    { time: "18:30", category: "美食", activity: "Dinner @ Outlet", address: "Tosu Premium Outlets", note: "" }
+                                ]
+                            },
+                            {
+                                dateDisplay: "2月14日 (六)", 
+                                summary: "糸島一日遊 → 午餐糸島海鮮堂（需預約）→ 夫妻石 → 白絲瀑布 → 19:00 前還車 → 博多站晚餐＋夜逛商場",
+                                spots: [
+                                    { time: "10:00", category: "景點", activity: "糸島 (Itoshima)", address: "糸島", note: "" },
+                                    { time: "12:30", category: "美食", activity: "Lunch 糸島海鮮堂", address: "糸島海鮮堂 二見ヶ浦本店", note: "需預約: https://www.itoshima-seafoodrestaurant.com/res/day.php?date=2026-02-14" },
+                                    { time: "14:30", category: "景點", activity: "櫻井二見ヶ浦 / 二丈福井", address: "Sakurai Futamigaura's Couple Stones", note: "夫妻石" },
+                                    { time: "16:00", category: "景點", activity: "白絲瀑布", address: "白絲瀑布", note: "460-6 Shiraito, Itoshima, Fukuoka 819-1154日本" },
+                                    { time: "18:30", category: "交通", activity: "19:00 前還車", address: "日本,福岡,Fukuoka Fukuoka-shi 1-12-7 Hakataekihigashi, Hakata-ku", note: "博多站新幹線築紫口" },
+                                    { time: "19:30", category: "美食", activity: "Dinner @博多站", address: "博多站", note: "麵屋街，一番街，阪急foodcourt" },
+                                    { time: "20:30", category: "購物", activity: "博多站附近商場", address: "博多站", note: "阪急百貨，AMU PLAZA，kitte0101（駿河屋），巴士總站樓上商場（一番賞，扭蛋，namco）" }
 
-                            ]},
-                            { dateDisplay: "2月15日 (日)", spots: [
-                                { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
-                                { time: "13:00", category: "購物", activity: "博多運河城行街", address: "Canal City Hakata", note: "Jump store, 扭蛋, sanrio" },
-                                { time: "15:00", category: "美食", activity: "FUK coffee (pudding)", address: "FUK Coffee 6-22 Gionmachi, Hakata Ward, Fukuoka, 812-0038日本", note: "" },
-                                { time: "19:00", category: "美食", activity: "Dinner", address: "", note: "" },
+                                ]
+                            },
+                            {
+                                dateDisplay: "2月15日 (日)", 
+                                summary: "午餐（待定）→ 博多運河城購物 → FUK Coffee 布丁 → 晚餐（待定）",
+                                spots: [
+                                    { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
+                                    { time: "13:00", category: "購物", activity: "博多運河城行街", address: "Canal City Hakata", note: "Jump store, 扭蛋, sanrio" },
+                                    { time: "15:00", category: "美食", activity: "FUK coffee (pudding)", address: "FUK Coffee 6-22 Gionmachi, Hakata Ward, Fukuoka, 812-0038日本", note: "" },
+                                    { time: "19:00", category: "美食", activity: "Dinner", address: "", note: "" },
 
-                            ]},
-                            { dateDisplay: "2月16日 (一)", spots: [
-                                { time: "10:00", category: "交通", activity: "Check out hotel", address: "", note: "" },
-                                { time: "11:30", category: "景點", activity: "櫛田神社", address: "櫛田神社", note: "" },
-                                { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
-                                { time: "15:00", category: "交通", activity: "前往機場", address: "Fukuoka Airport", note: "flight at 1805, 需要提前到達" },
-                            ]}
+                                ]
+                            },
+                            {
+                                dateDisplay: "2月16日 (一)", 
+                                summary: "退房 → 櫛田神社 → 午餐（待定）→ 15:00 去機場（18:05 航班）",
+                                spots: [
+                                    { time: "10:00", category: "交通", activity: "Check out hotel", address: "", note: "" },
+                                    { time: "11:30", category: "景點", activity: "櫛田神社", address: "櫛田神社", note: "" },
+                                    { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
+                                    { time: "15:00", category: "交通", activity: "前往機場", address: "Fukuoka Airport", note: "flight at 1805, 需要提前到達" },
+                                ]
+                            }
                         ],
                         flights: [
                             { no: "UO600", from: "HKG", fromTime: "07:45", fromTerminal: "1", to: "FUK", toTime: "11:55", toTerminal: "1" },
@@ -373,7 +653,12 @@
                             { no: "UO639", from: "FUK", fromTime: "18:05", fromTerminal: "I", to: "HKG", toTime: "21:05", toTerminal: "1" }
                         ],
                         expenses: [],
-                        shoppingList: [],
+                        shoppingList: [], 
+                        gourmetList: [
+                            { type: "拉麵", name: "一蘭總店", location: "中洲一蘭", tried: false },
+                            { type: "燒肉", name: "Nikuyaki Benjamin", location: "Nikuyaki Benjamin", tried: false },
+                            { type: "海鮮丼", name: "博多シーフードうお田", location: "博多シーフードうお田", tried: false },
+                        ],
                         documents: [
                             { name: "Visit Japan Web", type: "link", value: "https://www.vjw.digital.go.jp/main/#/vjwplo001" },
                             { name: "schedule notes", type: "link", value: "https://www.icloud.com/notes/046XOdhTVDFWfX5j25LGHPI6w#Fukuoka_2026" },
@@ -381,7 +666,7 @@
                     };
                 };
 
-            
+
                 watch(trips, (val) => localStorage.setItem('travel_master_pro_v13', JSON.stringify(val)), { deep: true });
 
                 const openForm = (trip = null) => {
@@ -397,7 +682,7 @@
                         const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(formTrip.destination)}&count=5&language=zh&format=json`);
                         const data = await res.json();
                         destSuggestions.value = data.results || [];
-                    } catch (e) {} finally { searchLoading.value = false; }
+                    } catch (e) { } finally { searchLoading.value = false; }
                 };
 
                 const selectSuggestion = (s) => {
@@ -450,7 +735,7 @@
                                 if (wData.daily) day.weather = { tempMax: wData.daily.temperature_2m_max[i], tempMin: wData.daily.temperature_2m_min[i], rainProb: wData.daily.precipitation_probability_max[i], condition: weatherCodeMap[wData.daily.weather_code[i]] || "未知" };
                             });
                         }
-                    } catch (e) {}
+                    } catch (e) { }
                 };
 
                 // 文件處理
@@ -459,10 +744,10 @@
                     if (!file) return;
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        currentTrip.value.documents.push({ 
-                            name: file.name, 
-                            type: file.type === 'application/pdf' ? 'pdf' : 'image', 
-                            value: e.target.result 
+                        currentTrip.value.documents.push({
+                            name: file.name,
+                            type: file.type === 'application/pdf' ? 'pdf' : 'image',
+                            value: e.target.result
                         });
                     };
                     reader.readAsDataURL(file);
@@ -483,13 +768,13 @@
                     sortedSpots: computed(() => (currentDay.value !== null && currentTrip.value) ? [...currentTrip.value.itinerary[currentDay.value].spots].sort((a, b) => a.time.localeCompare(b.time)) : []),
                     totalTargetAmount: computed(() => currentTrip.value?.expenses.reduce((s, e) => s + (e.amount || 0), 0) || 0),
                     totalBaseAmount: computed(() => exchangeRate.value === 'N/A' ? 'N/A' : (computed(() => currentTrip.value?.expenses.reduce((s, e) => s + (e.amount || 0), 0) || 0).value / exchangeRate.value).toFixed(2)),
-                    currentViewTitle: computed(() => (currentDay.value !== null && activeTab.value === 'itinerary') ? `Day ${currentDay.value+1}` : tabs.find(t => t.id === activeTab.value).name),
+                    currentViewTitle: computed(() => (currentDay.value !== null && activeTab.value === 'itinerary') ? `Day ${currentDay.value + 1}` : tabs.find(t => t.id === activeTab.value).name),
                     currentDayWeather: computed(() => currentDay.value !== null ? currentTrip.value.itinerary[currentDay.value].weather : null),
                     addSpot: () => currentTrip.value.itinerary[currentDay.value].spots.push({ time: "10:00", category: "景點", activity: "", address: "", note: "" }),
                     removeSpot: (spot) => currentTrip.value.itinerary[currentDay.value].spots.splice(currentTrip.value.itinerary[currentDay.value].spots.indexOf(spot), 1),
-                    addExpense: () => { const now = new Date(); currentTrip.value.expenses.unshift({ item: '', amount: 0, note: '', timestamp: `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}` }); },
+                    addExpense: () => { const now = new Date(); currentTrip.value.expenses.unshift({ item: '', amount: 0, note: '', timestamp: `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}` }); },
                     addFlight: () => currentTrip.value.flights.push({ no: '', from: '', fromTime: '00:00', fromTerminal: '', to: '', toTime: '00:00', toTerminal: '' }),
-                    addLinkPrompt: () => { const name = prompt("連結名稱"), url = prompt("網址 (https://)"); if(name && url) currentTrip.value.documents.push({ name, type: 'link', value: url }); },
+                    addLinkPrompt: () => { const name = prompt("連結名稱"), url = prompt("網址 (https://)"); if (name && url) currentTrip.value.documents.push({ name, type: 'link', value: url }); },
                     openGoogleMap: (q) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, '_blank'),
                     deleteTrip: (id) => confirm('確定刪除？') && (trips.value = trips.value.filter(t => t.id !== id))
                 };
@@ -497,4 +782,5 @@
         }).mount('#app');
     </script>
 </body>
+
 </html>
