@@ -1,143 +1,105 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Fuk you</title>
-    <!-- iOS: Icon for Home Screen -->
+    
+    <!-- iOS / Android 加到主畫面圖標與設定 -->
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/826/826070.png">
-
-    <!-- Android/Chrome: Icon and Theme Color -->
     <link rel="icon" type="image/png" sizes="192x192" href="https://cdn-icons-png.flaticon.com/512/826/826070.png">
-    <meta name="theme-color" content="#4F46E5">
-
-    <!-- App Name for Home Screen -->
-    <meta name="apple-mobile-web-app-title" content="TravelMaster">
-    <meta name="application-name" content="TravelMaster">
-
-    <!-- Hide browser UI (Full Screen mode) -->
+    <meta name="apple-mobile-web-app-title" content="Fuk you">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#F8FAFC">
+
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        :root {
-            --sab: env(safe-area-inset-bottom);
-            --sat: env(safe-area-inset-top);
+        :root { 
+            --sat: env(safe-area-inset-top); 
+            --sab: env(safe-area-inset-bottom); 
         }
-
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: #F8FAFC;
+        
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #F8FAFC; 
             -webkit-tap-highlight-color: transparent;
+
+            /* 防止 iPhone 上橡皮筋回彈效果影響佈局 */
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
 
-        .safe-area-bottom-scroll {
-            padding-bottom: calc(var(--sab) + 160px) !important;
+        /* 內容滾動區適配 iPhone Pro Max */
+        .main-scroll-area {
+            height: 100dvh;
+            overflow-y: auto;
+            padding-top: var(--sat);
+            padding-bottom: calc(var(--sab) + 100px);
+            -webkit-overflow-scrolling: touch;
         }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        .glass { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(0,0,0,0.05); 
         }
 
-        .cat-tag {
-            font-size: 0.65rem;
-            padding: 2px 10px;
-            border-radius: 99px;
-            font-weight: 800;
-        }
+        .cat-tag { font-size: 0.65rem; padding: 2px 10px; border-radius: 99px; font-weight: 800; }
+        .cat-景點 { background: #dcfce7; color: #166534; }
+        .cat-美食 { background: #fee2e2; color: #991b1b; }
+        .cat-交通 { background: #e0f2fe; color: #075985; }
+        .cat-購物 { background: #fef3c7; color: #92400e; }
+        .cat-住宿 { background: #ede9fe; color: #5b21b6; }
 
-        .cat-景點 {
-            background: #dcfce7;
-            color: #166534;
-        }
+        /* 轉場動畫 */
+        .page-slide-enter-active, .page-slide-leave-active { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .page-slide-enter-from { transform: translateX(100%); opacity: 0; }
+        .page-slide-leave-to { transform: translateX(-100%); opacity: 0; }
 
-        .cat-美食 {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
 
-        .cat-交通 {
-            background: #e0f2fe;
-            color: #075985;
-        }
-
-        .cat-購物 {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .cat-住宿 {
-            background: #ede9fe;
-            color: #5b21b6;
-        }
-
-        .page-slide-enter-active,
-        .page-slide-leave-active {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        .page-slide-enter-from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-
-        .page-slide-leave-to {
-            transform: translateX(-100%);
-            opacity: 0;
-        }
-
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-
 <body>
-    <div id="app" class="max-w-md mx-auto min-h-[100dvh] relative bg-slate-50 shadow-2xl flex flex-col overflow-hidden">
-
+    <div id="app" class="max-w-md mx-auto h-[100dvh] relative bg-slate-50 shadow-2xl overflow-hidden">
+        
         <transition name="page-slide">
-            <!-- 1. 旅程列表 -->
-            <div v-if="!currentTrip && !showFormPage" class="absolute inset-0 p-6 overflow-y-auto no-scrollbar"
-                key="list">
-                <div class="flex justify-between items-center mb-8" :style="{ paddingTop: 'var(--sat)' }">
-                    <h1 class="text-3xl font-black text-slate-900 tracking-tighter">我的旅程</h1>
-                    <button @click="openForm(null)"
-                        class="w-12 h-12 bg-indigo-600 text-white rounded-2xl shadow-lg flex items-center justify-center active:scale-90 transition-transform">
-                        <i class="ph-bold ph-plus text-xl"></i>
-                    </button>
-                </div>
+            
+            <!-- 1. 旅程列表頁面 -->
+            <div v-if="!currentTrip && !showFormPage && !viewingDoc" class="absolute inset-0 main-scroll-area no-scrollbar" key="list">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-8">
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tighter">我的旅程</h1>
+                        <button @click="openForm(null)" class="w-12 h-12 bg-indigo-600 text-white rounded-2xl shadow-lg flex items-center justify-center active:scale-90 transition-transform">
+                            <i class="ph-bold ph-plus text-xl"></i>
+                        </button>
+                    </div>
 
-                <div class="space-y-4 pb-10">
-                    <div v-for="trip in trips" :key="trip.id" @click="selectTrip(trip)"
-                        class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 active:bg-slate-50 transition-colors relative">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-xl font-black text-slate-800 leading-tight">{{ trip.name || '未命名旅程' }}
-                                </h3>
-                                <p
-                                    class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-widest flex items-center gap-1">
-                                    <i class="ph-bold ph-map-pin"></i> {{ trip.destination }}
-                                </p>
+                    <div class="space-y-4">
+                        <div v-for="trip in trips" :key="trip.id" @click="selectTrip(trip)" 
+                             class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 active:bg-slate-50 transition-colors relative">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-black text-slate-800 leading-tight">{{ trip.name || '未命名旅程' }}</h3>
+                                    <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-widest flex items-center gap-1">
+                                        <i class="ph-bold ph-map-pin"></i> {{ trip.destination }}
+                                    </p>
+                                </div>
+                                <button @click.stop="deleteTrip(trip.id)" class="text-slate-200 hover:text-red-400 p-2"><i class="ph-bold ph-trash"></i></button>
                             </div>
-                            <button @click.stop="deleteTrip(trip.id)"
-                                class="text-slate-200 hover:text-red-400 p-2 transition-colors"><i
-                                    class="ph-bold ph-trash"></i></button>
-                        </div>
-                        <div class="flex items-center justify-between mt-2">
-                            <span class="text-[10px] font-black text-slate-300">{{ trip.startDate }} - {{ trip.endDate
-                                }}</span>
-                            <span class="text-[9px] font-black bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg">{{
-                                trip.baseCurrency }} → {{ trip.targetCurrency }}</span>
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-black text-slate-300">{{ trip.startDate }} - {{ trip.endDate }}</span>
+                                <span class="text-[9px] font-black bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg">{{ trip.baseCurrency }} → {{ trip.targetCurrency }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -145,386 +107,294 @@
 
             <!-- 2. 新增 / 編輯頁面 -->
             <div v-else-if="showFormPage" class="absolute inset-0 bg-white z-[150] flex flex-col" key="form">
-                <header class="p-6 flex items-center justify-between border-b border-slate-50"
-                    :style="{ paddingTop: 'calc(var(--sat) + 1rem)' }">
+                <header class="flex-none p-6 flex items-center justify-between border-b border-slate-50" :style="{ paddingTop: 'calc(var(--sat) + 1rem)' }">
                     <div class="flex items-center gap-4">
-                        <button @click="showFormPage = false"
-                            class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-full"><i
-                                class="ph-bold ph-arrow-left"></i></button>
+                        <button @click="showFormPage = false" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-full"><i class="ph-bold ph-arrow-left"></i></button>
                         <h2 class="text-xl font-black text-slate-800">{{ isEditing ? '修改計畫' : '新增旅程' }}</h2>
                     </div>
                 </header>
-                <div class="flex-1 overflow-y-auto p-6 space-y-6 pb-10">
-                    <div><label
-                            class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">旅程名稱</label><input
-                            v-model="formTrip.name"
-                            class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-lg focus:ring-2 ring-indigo-500">
-                    </div>
-                    <div class="relative"><label
-                            class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">目的地城市</label><input
-                            v-model="formTrip.destination" @input="searchDestinations"
-                            class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-lg focus:ring-2 ring-indigo-500"
-                            placeholder="搜尋城市...">
-                        <div v-if="destSuggestions.length > 0"
-                            class="absolute z-[160] left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
-                            <div v-for="s in destSuggestions" @click="selectSuggestion(s)"
-                                class="p-4 hover:bg-slate-50 cursor-pointer font-bold text-slate-800 border-b border-slate-50 last:border-0">
-                                {{ s.name }} ({{ s.country }})</div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label
-                                class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">開始日期</label><input
-                                v-model="formTrip.startDate" type="date"
-                                class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"></div>
-                        <div><label
-                                class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block">結束日期</label><input
-                                v-model="formTrip.endDate" type="date"
-                                class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"></div>
-                    </div>
-                    <div class="bg-indigo-50 p-6 rounded-[32px] grid grid-cols-2 gap-4">
-                        <div><label class="text-[10px] font-black text-indigo-400 block mb-2">原始貨幣</label><select
-                                v-model="formTrip.baseCurrency"
-                                class="w-full p-3 bg-white rounded-xl font-bold text-xs">
-                                <option v-for="c in currencyList" :value="c">{{ c }}</option>
-                            </select></div>
-                        <div><label class="text-[10px] font-black text-indigo-400 block mb-2">外幣</label><select
-                                v-model="formTrip.targetCurrency"
-                                class="w-full p-3 bg-white rounded-xl font-bold text-xs">
-                                <option v-for="c in currencyList" :value="c">{{ c }}</option>
-                            </select></div>
-                    </div>
-                    <button @click="saveTrip"
-                        class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-indigo-100 active:scale-95 transition-transform">儲存旅程</button>
+                <div class="flex-1 overflow-y-auto p-6 space-y-6 pb-20 no-scrollbar">
+                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block tracking-widest">旅程名稱</label><input v-model="formTrip.name" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-lg focus:ring-2 ring-indigo-500"></div>
+                    <div class="relative"><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block tracking-widest">目的地城市</label><input v-model="formTrip.destination" @input="searchDestinations" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-lg focus:ring-2 ring-indigo-500" placeholder="搜尋城市..."><div v-if="destSuggestions.length > 0" class="absolute z-[160] left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"><div v-for="s in destSuggestions" @click="selectSuggestion(s)" class="p-4 hover:bg-slate-50 cursor-pointer font-bold text-slate-800 border-b border-slate-50 last:border-0">{{ s.name }} ({{ s.country }})</div></div></div>
+                    <div class="grid grid-cols-2 gap-4"><div><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block tracking-widest">開始日期</label><input v-model="formTrip.startDate" type="date" class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"></div><div><label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-2 block tracking-widest">結束日期</label><input v-model="formTrip.endDate" type="date" class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"></div></div>
+                    <div class="bg-indigo-50 p-6 rounded-[32px] grid grid-cols-2 gap-4"><div><label class="text-[10px] font-black text-indigo-400 block mb-2 tracking-widest uppercase">原始貨幣</label><select v-model="formTrip.baseCurrency" class="w-full p-3 bg-white rounded-xl font-bold text-xs"><option v-for="c in currencyList" :value="c">{{ c }}</option></select></div><div><label class="text-[10px] font-black text-indigo-400 block mb-2 tracking-widest uppercase">外幣</label><select v-model="formTrip.targetCurrency" class="w-full p-3 bg-white rounded-xl font-bold text-xs"><option v-for="c in currencyList" :value="c">{{ c }}</option></select></div></div>
+                    <button @click="saveTrip" class="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-indigo-100 active:scale-95 transition-transform">儲存旅程</button>
                 </div>
             </div>
 
-            <!-- 3. 詳細頁面 -->
+            <!-- 3. 文件閱讀器頁面 (新功能：轉跳而非開新頁面) -->
+            <div v-else-if="viewingDoc" class="absolute inset-0 bg-slate-900 z-[200] flex flex-col" key="viewer">
+                <header class="flex-none p-6 flex items-center justify-between" :style="{ paddingTop: 'calc(var(--sat) + 1rem)' }">
+                    <button @click="viewingDoc = null" class="h-10 px-4 flex items-center gap-2 bg-white/10 text-white rounded-full backdrop-blur-md">
+                        <i class="ph-bold ph-caret-left"></i>
+                        <span class="text-xs font-bold uppercase">返回文件</span>
+                    </button>
+                    <p class="text-white/60 text-[10px] font-black uppercase truncate w-32 text-right">{{ viewingDoc.name }}</p>
+                </header>
+                <div class="flex-1 flex items-center justify-center p-4">
+                    <img v-if="viewingDoc.type === 'image'" :src="viewingDoc.value" class="max-w-full max-h-full rounded-xl shadow-2xl object-contain">
+                    <iframe v-else-if="viewingDoc.type === 'pdf'" :src="viewingDoc.value" class="w-full h-full rounded-xl" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <!-- 4. 旅程詳細頁面 -->
             <div v-else class="absolute inset-0 flex flex-col bg-slate-50" key="detail">
-                <header
-                    class="flex-none z-[60] bg-white/80 backdrop-blur-md px-6 py-4 flex justify-between items-center border-b border-slate-50"
-                    :style="{ paddingTop: 'calc(var(--sat) + 1rem)' }">
-                    <div class="flex items-center gap-3"><button @click="currentTrip = null"
-                            class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center"><i
-                                class="ph-bold ph-caret-left"></i></button>
+                <header class="flex-none z-[60] bg-white/80 backdrop-blur-md px-6 py-4 flex justify-between items-center border-b border-slate-50" :style="{ paddingTop: 'calc(var(--sat) + 1rem)' }">
+                    <div class="flex items-center gap-3">
+                        <button @click="currentTrip = null" class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full active:scale-90"><i class="ph-bold ph-caret-left"></i></button>
                         <div>
                             <h2 class="font-black text-slate-800 leading-none">{{ currentViewTitle }}</h2>
-                            <p class="text-[9px] text-slate-400 font-bold uppercase mt-1 truncate w-40">{{
-                                currentTrip.name }}</p>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase mt-1 truncate w-40 tracking-widest">{{ currentTrip.name }}</p>
                         </div>
                     </div>
-                    <div class="flex gap-2"><button v-if="activeTab === 'itinerary' && currentDay !== null"
-                            @click="showWeatherDetail = true" class="text-indigo-600"><i
-                                class="ph-fill ph-cloud-sun text-2xl"></i></button><button
-                            @click="openForm(currentTrip)"
-                            class="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center text-slate-400"><i
-                                class="ph-bold ph-gear"></i></button></div>
+                    <div class="flex gap-2">
+                        <button v-if="activeTab === 'itinerary' && currentDay !== null" @click="showWeatherDetail = true" class="text-indigo-600"><i class="ph-fill ph-cloud-sun text-2xl"></i></button>
+                        <button @click="openForm(currentTrip)" class="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center text-slate-400"><i class="ph-bold ph-gear"></i></button>
+                    </div>
                 </header>
 
-                <main class="flex-1 overflow-y-auto safe-area-bottom-scroll p-4 no-scrollbar">
+                <main class="flex-1 overflow-y-auto no-scrollbar pb-32">
+                    
                     <!-- 行程規劃 -->
-                    <section v-if="activeTab === 'itinerary'">
+                    <section v-if="activeTab === 'itinerary'" class="p-4 space-y-4">
                         <div v-if="currentDay === null" class="space-y-3">
-                            <div v-for="(day, idx) in currentTrip.itinerary" @click="currentDay = idx"
-                                class="bg-white p-5 rounded-[28px] border border-slate-100 flex justify-between items-center shadow-sm">
+                            <div v-for="(day, idx) in currentTrip.itinerary" @click="currentDay = idx" class="bg-white p-5 rounded-[28px] border border-slate-100 flex justify-between items-center shadow-sm active:bg-slate-50">
                                 <div class="flex items-center gap-4">
-                                    <div
-                                        class="w-12 h-12 bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-white">
-                                        <span class="text-[8px] font-black opacity-40">DAY</span><span
-                                            class="text-lg font-black leading-none">{{idx+1}}</span></div>
+                                    <div class="w-12 h-12 bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-white">
+                                        <span class="text-[8px] font-black opacity-40 uppercase">Day</span>
+                                        <span class="text-lg font-black leading-none">{{idx+1}}</span>
+                                    </div>
                                     <div>
                                         <div class="font-black text-slate-700">{{ day.dateDisplay }}</div>
-                                        <div v-if="day.weather" class="text-[10px] text-indigo-500 font-bold">{{
-                                            day.weather.condition }} {{ day.weather.tempMax }}°</div>
+                                        <div v-if="day.weather" class="text-[10px] text-indigo-500 font-bold">{{ day.weather.condition }} {{ day.weather.tempMax }}°</div>
                                     </div>
                                 </div>
                                 <i class="ph-bold ph-caret-right text-slate-200"></i>
                             </div>
                         </div>
                         <div v-else class="space-y-4">
-                            <button @click="currentDay = null"
-                                class="text-xs font-black text-indigo-600 flex items-center gap-1"><i
-                                    class="ph-bold ph-arrow-left"></i> 返回天數</button>
-
-                            <!-- 每日行程概要欄位 -->
-                            <div class="bg-indigo-50 p-4 rounded-3xl border border-indigo-100 mb-2">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <i class="ph-fill ph-note-pencil text-indigo-600"></i>
-                                    <span
-                                        class="text-[10px] font-black text-indigo-900 uppercase tracking-widest">今日行程概要</span>
+                            <button @click="currentDay = null" class="text-xs font-black text-indigo-600 flex items-center gap-1"><i class="ph-bold ph-arrow-left"></i> 返回日期列表</button>
+                            
+                            <div class="bg-indigo-50 p-5 rounded-[32px] border border-indigo-100">
+                                <div class="flex items-center gap-2 mb-2 opacity-50">
+                                    <i class="ph-bold ph-quotes"></i>
+                                    <span class="text-[10px] font-black uppercase tracking-widest">今日行程概要</span>
                                 </div>
-                                <textarea v-model="currentTrip.itinerary[currentDay].summary"
-                                    class="w-full bg-transparent text-sm font-bold text-indigo-800 outline-none placeholder:text-indigo-200"
-                                    rows="2" placeholder="輸入今天的重點筆記..."></textarea>
+                                <textarea v-model="currentTrip.itinerary[currentDay].summary" class="w-full bg-transparent text-sm font-bold text-indigo-900 outline-none placeholder:text-indigo-200" rows="2" placeholder="例如：今天要租車自駕去糸島..."></textarea>
                             </div>
 
-                            <div v-for="(spot, sIdx) in sortedSpots" :key="sIdx"
-                                class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+                            <div v-for="(spot, sIdx) in sortedSpots" :key="sIdx" class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
                                 <div class="flex justify-between items-center mb-4">
-                                    <div class="flex gap-2"><input v-model="spot.time" type="time"
-                                            class="font-mono font-bold text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg outline-none"><select
-                                            v-model="spot.category" :class="'cat-'+spot.category"
-                                            class="cat-tag outline-none appearance-none">
-                                            <option v-for="c in categories" :value="c">{{c}}</option>
-                                        </select></div><button @click="removeSpot(spot)" class="text-slate-200"><i
-                                            class="ph-bold ph-trash"></i></button>
+                                    <div class="flex gap-2">
+                                        <input v-model="spot.time" type="time" class="font-mono font-bold text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg outline-none">
+                                        <select v-model="spot.category" :class="'cat-'+spot.category" class="cat-tag outline-none appearance-none"><option v-for="c in categories" :value="c">{{c}}</option></select>
+                                    </div>
+                                    <button @click="removeSpot(spot)" class="text-slate-200"><i class="ph-bold ph-trash"></i></button>
                                 </div>
-                                <input v-model="spot.activity"
-                                    class="w-full font-black text-slate-800 text-lg mb-2 outline-none"
-                                    placeholder="項目內容...">
-                                <textarea v-model="spot.note"
-                                    class="w-full text-[10px] text-slate-400 bg-transparent outline-none mb-2" rows="2"
-                                    placeholder="備註..."></textarea>
-                                <div class="flex gap-2"><input v-model="spot.address"
-                                        class="flex-1 bg-slate-50 px-3 py-2 rounded-xl text-[10px] font-bold outline-none"
-                                        placeholder="地址..."><button
-                                        @click="openGoogleMap(spot.address || spot.activity)"
-                                        class="w-10 h-10 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg"><i
-                                            class="ph-bold ph-navigation-arrow"></i></button></div>
+                                <input v-model="spot.activity" class="w-full font-black text-slate-800 text-lg mb-2 outline-none" placeholder="項目內容...">
+                                <textarea v-model="spot.note" class="w-full text-[10px] text-slate-400 bg-transparent outline-none mb-2" rows="2" placeholder="備註..."></textarea>
+                                <div class="flex gap-2">
+                                    <input v-model="spot.address" class="flex-1 bg-slate-50 px-3 py-2 rounded-xl text-[10px] font-bold outline-none" placeholder="地址...">
+                                    <button @click="openGoogleMap(spot.address || spot.activity)" class="w-10 h-10 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90"><i class="ph-bold ph-navigation-arrow"></i></button>
+                                </div>
                             </div>
-                            <button @click="addSpot"
-                                class="w-full py-8 border-2 border-dashed border-slate-200 rounded-[32px] text-slate-300 font-black uppercase text-xs">+
-                                新增規劃</button>
+                            <button @click="addSpot" class="w-full py-8 border-2 border-dashed border-slate-200 rounded-[32px] text-slate-300 font-black uppercase text-xs active:bg-slate-50 transition-all">+ 新增規劃項目</button>
                         </div>
                     </section>
 
-                    <!-- 行程文件分頁 -->
-                    <section v-if="activeTab === 'documents'" class="space-y-6">
+                    <!-- 行程文件 -->
+                    <section v-if="activeTab === 'documents'" class="p-4 space-y-6">
                         <div class="grid grid-cols-2 gap-4">
-                            <button @click="$refs.fileInput.click()"
-                                class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2">
+                            <button @click="$refs.fileInput.click()" class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2 active:scale-95 transition-transform">
                                 <i class="ph-bold ph-image text-2xl text-indigo-600"></i>
-                                <span class="text-[10px] font-bold uppercase">上載文件/相片</span>
-                                <!-- 支援廣泛格式：heic, png, jpg, pdf -->
-                                <input type="file" ref="fileInput" class="hidden"
-                                    accept=".heic,image/png,image/jpeg,image/jpg,application/pdf" @change="uploadFile">
+                                <span class="text-[10px] font-bold uppercase tracking-widest">上載文件/相片</span>
+                                <input type="file" ref="fileInput" class="hidden" accept=".heic,image/*,application/pdf" @change="uploadFile">
                             </button>
-                            <button @click="addLinkPrompt"
-                                class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2">
+                            <button @click="addLinkPrompt" class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2 active:scale-95 transition-transform">
                                 <i class="ph-bold ph-link text-2xl text-indigo-600"></i>
-                                <span class="text-[10px] font-bold uppercase">新增網頁連結</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">新增網頁連結</span>
                             </button>
                         </div>
                         <div class="space-y-3">
-                            <h3 class="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">我的文件庫</h3>
-                            <div v-for="(doc, dIdx) in currentTrip.documents" :key="dIdx"
-                                class="bg-white p-4 rounded-3xl border border-slate-100 flex items-center justify-between shadow-sm">
-                                <div class="flex items-center gap-4 flex-1 overflow-hidden" @click="openDoc(doc)">
-                                    <div
-                                        class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-indigo-600">
+                            <h3 class="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">我的文件庫 (如: Visit Japan Web)</h3>
+                            <div v-for="(doc, dIdx) in currentTrip.documents" :key="dIdx" class="bg-white p-4 rounded-3xl border border-slate-100 flex items-center justify-between shadow-sm active:bg-slate-50" @click="handleDocClick(doc)">
+                                <div class="flex items-center gap-4 flex-1 overflow-hidden">
+                                    <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-indigo-600">
                                         <i v-if="doc.type === 'link'" class="ph-bold ph-link"></i>
                                         <i v-else-if="doc.type === 'pdf'" class="ph-bold ph-file-pdf"></i>
                                         <i v-else class="ph-bold ph-image-square"></i>
                                     </div>
                                     <div class="truncate">
                                         <p class="font-bold text-slate-800 text-sm truncate">{{ doc.name }}</p>
+                                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter opacity-60">{{ doc.type }}</p>
                                     </div>
                                 </div>
-                                <button @click="currentTrip.documents.splice(dIdx, 1)" class="text-slate-200 ml-4"><i
-                                        class="ph-bold ph-x-circle text-xl"></i></button>
+                                <button @click.stop="currentTrip.documents.splice(dIdx, 1)" class="text-slate-200 ml-4"><i class="ph-bold ph-x-circle text-xl"></i></button>
                             </div>
                         </div>
                     </section>
 
-                    <!-- 航班頁面 -->
-                    <section v-if="activeTab === 'flight'" class="space-y-6">
-                        <div v-for="(f, fIdx) in currentTrip.flights"
-                            class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative">
-                            <div class="flex justify-between items-center mb-6"><input v-model="f.no"
-                                    class="font-mono font-black text-2xl text-slate-900 uppercase w-full outline-none"
-                                    placeholder="航班號"><button @click="currentTrip.flights.splice(fIdx, 1)"
-                                    class="text-slate-200"><i class="ph-bold ph-trash"></i></button></div>
-                            <div class="grid grid-cols-2 gap-6">
+                    <!-- 航班 -->
+                    <section v-if="activeTab === 'flight'" class="p-4 space-y-6">
+                        <div v-for="(f, fIdx) in currentTrip.flights" class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden">
+                            <div class="flex justify-between items-center mb-6">
+                                <input v-model="f.no" class="font-mono font-black text-2xl text-slate-900 uppercase w-full outline-none" placeholder="航班號">
+                                <button @click="currentTrip.flights.splice(fIdx, 1)" class="text-slate-200"><i class="ph-bold ph-trash"></i></button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-6 relative">
                                 <div class="space-y-3">
-                                    <p class="text-[10px] font-black text-slate-400 uppercase">出發</p>
-                                    <input v-model="f.from" class="text-3xl font-black w-full outline-none">
-                                    <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2">
-                                        <span class="text-[8px] font-black text-slate-300">Terminal</span>
-                                        <input v-model="f.fromTerminal"
-                                            class="w-full bg-transparent text-[10px] font-black py-1" placeholder="航廈">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Departure</p>
+                                    <input v-model="f.from" class="text-3xl font-black w-full outline-none" placeholder="HKG">
+                                    <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2 w-max">
+                                        <span class="text-[8px] font-black text-slate-300">T</span>
+                                        <input v-model="f.fromTerminal" class="w-8 bg-transparent text-[10px] font-black py-1 outline-none" placeholder="1">
                                     </div>
-                                    <input v-model="f.fromTime" type="time"
-                                        class="text-sm font-bold w-full text-indigo-600 outline-none">
+                                    <input v-model="f.fromTime" type="time" class="text-sm font-bold w-full text-indigo-600 outline-none">
                                 </div>
                                 <div class="space-y-3 text-right">
-                                    <p class="text-[10px] font-black text-slate-400 uppercase">到達</p>
-                                    <input v-model="f.to"
-                                        class="text-3xl font-black w-full text-right outline-none text-indigo-600">
-                                    <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2 flex-row-reverse">
-                                        <span class="text-[8px] font-black text-slate-300">Terminal</span>
-                                        <input v-model="f.toTerminal"
-                                            class="w-full bg-transparent text-[10px] font-black py-1 text-right"
-                                            placeholder="航廈">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Arrival</p>
+                                    <input v-model="f.to" class="text-3xl font-black w-full text-right outline-none text-indigo-600" placeholder="FUK">
+                                    <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2 flex-row-reverse w-max ml-auto">
+                                        <span class="text-[8px] font-black text-slate-300">T</span>
+                                        <input v-model="f.toTerminal" class="w-8 bg-transparent text-[10px] font-black py-1 text-right outline-none" placeholder="I">
                                     </div>
-                                    <input v-model="f.toTime" type="time"
-                                        class="text-sm font-bold w-full text-right text-indigo-600 outline-none">
+                                    <input v-model="f.toTime" type="time" class="text-sm font-bold w-full text-right text-indigo-600 outline-none">
                                 </div>
+                                <i class="ph-fill ph-airplane-tilt text-slate-50 text-6xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -z-10"></i>
                             </div>
                         </div>
-                        <button @click="addFlight"
-                            class="w-full py-4 rounded-2xl bg-slate-900 text-white text-xs font-black uppercase">+
-                            新增航班</button>
+                        <button @click="addFlight" class="w-full py-4 rounded-2xl bg-slate-900 text-white text-xs font-black uppercase tracking-widest shadow-lg">+ 新增航班資訊</button>
                     </section>
 
-                    <!-- 記帳頁面 -->
-                    <section v-if="activeTab === 'expense'" class="space-y-4">
-                        <div class="bg-slate-900 p-8 rounded-[40px] text-white shadow-xl relative overflow-hidden">
+                    <!-- 記帳 -->
+                    <section v-if="activeTab === 'expense'" class="p-4 space-y-4">
+                        <div class="bg-slate-900 p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden">
                             <div class="relative z-10">
-                                <p class="text-[10px] font-black text-slate-400 uppercase mb-1">總支出 ({{
-                                    currentTrip.targetCurrency }})</p>
-                                <div class="text-4xl font-black mb-1">{{ totalTargetAmount.toLocaleString() }}</div>
-                                <div class="text-sm font-bold text-slate-500">≈ {{ currentTrip.baseCurrency }} {{
-                                    totalBaseAmount }}</div>
-                                <div
-                                    class="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center text-[10px] font-black text-slate-500 uppercase">
-                                    <span>匯率: 1 {{ currentTrip.baseCurrency }} = {{ exchangeRate }} {{
-                                        currentTrip.targetCurrency }}</span></div>
+                                <p class="text-[10px] font-black text-slate-500 uppercase mb-1 tracking-widest">總支出 ({{ currentTrip.targetCurrency }})</p>
+                                <div class="text-4xl font-black mb-1 leading-none">{{ totalTargetAmount.toLocaleString() }}</div>
+                                <div class="text-sm font-bold text-slate-500">≈ {{ currentTrip.baseCurrency }} {{ totalBaseAmount }}</div>
+                                <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center text-[10px] font-black text-slate-500 uppercase tracking-tighter">
+                                    <span>匯率: 1 {{ currentTrip.baseCurrency }} = {{ exchangeRate }} {{ currentTrip.targetCurrency }}</span>
+                                </div>
                             </div>
-                            <i class="ph-bold ph-coins absolute -right-4 -bottom-4 text-8xl opacity-10 rotate-12"></i>
+                            <i class="ph-fill ph-coins absolute -right-6 -bottom-6 text-9xl opacity-10 rotate-12"></i>
                         </div>
                         <div class="bg-white rounded-[32px] overflow-hidden border border-slate-100">
-                            <div v-for="(exp, eIdx) in currentTrip.expenses"
-                                class="p-4 border-b border-slate-50 flex items-center gap-4">
-                                <div class="flex-1"><input v-model="exp.item"
-                                        class="w-full font-bold text-sm outline-none" placeholder="項目...">
-                                    <div class="flex items-center gap-2 mt-1"><span
-                                            class="text-[8px] font-black text-indigo-400 bg-indigo-50 px-1.5 py-0.5 rounded">{{
-                                            exp.timestamp }}</span><input v-model="exp.note"
-                                            class="flex-1 text-[9px] text-slate-400 outline-none bg-transparent"
-                                            placeholder="備註..."></div>
+                            <div v-for="(exp, eIdx) in currentTrip.expenses" class="p-4 border-b border-slate-50 flex items-center gap-4">
+                                <div class="flex-1">
+                                    <input v-model="exp.item" class="w-full font-bold text-sm outline-none" placeholder="項目...">
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="text-[8px] font-black text-indigo-400 bg-indigo-50 px-1.5 py-0.5 rounded tracking-tighter">{{ exp.timestamp }}</span>
+                                        <input v-model="exp.note" class="flex-1 text-[9px] text-slate-400 outline-none bg-transparent" placeholder="備註...">
+                                    </div>
                                 </div>
-                                <div class="flex items-center bg-slate-50 px-3 py-2 rounded-xl"><span
-                                        class="text-[10px] font-black text-slate-300 mr-1">{{ currentTrip.targetCurrency
-                                        }}</span><input v-model.number="exp.amount" type="number"
-                                        class="w-16 text-right font-black text-slate-800 bg-transparent outline-none">
+                                <div class="flex items-center bg-slate-50 px-3 py-2 rounded-xl">
+                                    <span class="text-[10px] font-black text-slate-300 mr-1">{{ currentTrip.targetCurrency }}</span>
+                                    <input v-model.number="exp.amount" type="number" class="w-16 text-right font-black text-slate-800 bg-transparent outline-none">
                                 </div>
-                                <button @click="currentTrip.expenses.splice(eIdx, 1)" class="text-slate-200"><i
-                                        class="ph-bold ph-minus-circle"></i></button>
+                                <button @click="currentTrip.expenses.splice(eIdx, 1)" class="text-slate-200"><i class="ph-bold ph-minus-circle"></i></button>
                             </div>
-                            <button @click="addExpense"
-                                class="w-full py-5 text-indigo-600 font-black text-xs uppercase tracking-widest">+
-                                點擊新增紀錄</button>
+                            <button @click="addExpense" class="w-full py-5 text-indigo-600 font-black text-xs uppercase tracking-widest active:bg-slate-50 transition-colors">+ 點擊新增紀錄</button>
                         </div>
                     </section>
 
-                    <!-- 清單管理頁面 (美食 + 購物) -->
-                    <section v-if="activeTab === 'lists'" class="space-y-8">
-                        <!-- 美食清單 -->
+                    <!-- 清單管理 -->
+                    <section v-if="activeTab === 'lists'" class="p-4 space-y-8">
                         <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100">
                             <div class="flex items-center gap-2 mb-6">
                                 <i class="ph-fill ph-fork-knife text-rose-500 text-xl"></i>
-                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">美食必吃清單</h3>
+                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">美食清單</h3>
                             </div>
-                            <div class="space-y-4 mb-6">
+                            <div class="space-y-3 mb-6">
                                 <div class="grid grid-cols-2 gap-2">
-                                    <input v-model="newGourmet.type"
-                                        class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold"
-                                        placeholder="類型 (如: 燒肉)">
-                                    <input v-model="newGourmet.name"
-                                        class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold"
-                                        placeholder="店家名稱">
+                                    <input v-model="newGourmet.type" class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold" placeholder="類型 (如: 燒肉)">
+                                    <input v-model="newGourmet.name" class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold" placeholder="店家名稱">
                                 </div>
                                 <div class="flex gap-2">
-                                    <input v-model="newGourmet.location"
-                                        class="flex-1 bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold"
-                                        placeholder="地點或地址">
-                                    <button @click="addGourmetItem"
-                                        class="bg-rose-500 text-white px-6 rounded-xl text-xs font-black">ADD</button>
+                                    <input v-model="newGourmet.location" class="flex-1 bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold" placeholder="地點或地址">
+                                    <button @click="addGourmetItem" class="bg-rose-500 text-white px-6 rounded-xl text-xs font-black shadow-lg shadow-rose-100 active:scale-95 transition-transform">ADD</button>
                                 </div>
                             </div>
-                            <div class="space-y-3">
-                                <div v-for="(item, idx) in currentTrip.gourmetList" :key="idx"
-                                    class="p-3 bg-slate-50 rounded-2xl flex items-center justify-between">
-                                    <div class="flex items-center gap-3 overflow-hidden">
-                                        <button @click="item.tried = !item.tried"
-                                            :class="item.tried ? 'text-rose-500' : 'text-slate-200'">
-                                            <i :class="item.tried ? 'ph-fill ph-check-circle' : 'ph-bold ph-circle'"
-                                                class="text-2xl"></i>
+                            <div class="space-y-2">
+                                <div v-for="(item, idx) in currentTrip.gourmetList" :key="idx" class="p-3 bg-slate-50 rounded-2xl flex items-center justify-between border border-transparent active:border-rose-100 transition-colors">
+                                    <div class="flex items-center gap-3 overflow-hidden" @click="item.tried = !item.tried">
+                                        <button :class="item.tried ? 'text-rose-500' : 'text-slate-200'">
+                                            <i :class="item.tried ? 'ph-fill ph-check-circle' : 'ph-bold ph-circle'" class="text-2xl"></i>
                                         </button>
                                         <div class="overflow-hidden">
-                                            <p class="text-xs font-black text-rose-600 uppercase">{{ item.type }}</p>
-                                            <p class="font-bold text-slate-800 truncate">{{ item.name }}</p>
+                                            <p class="text-[9px] font-black text-rose-600 uppercase tracking-tighter">{{ item.type }}</p>
+                                            <p class="font-bold text-slate-800 truncate text-sm" :class="item.tried ? 'line-through opacity-40' : ''">{{ item.name }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <button v-if="item.location" @click="openGoogleMap(item.location)"
-                                            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-green-500 shadow-sm"><i
-                                                class="ph-bold ph-map-pin"></i></button>
-                                        <button @click="currentTrip.gourmetList.splice(idx, 1)"
-                                            class="text-slate-300"><i class="ph-bold ph-trash"></i></button>
+                                        <button v-if="item.location" @click="openGoogleMap(item.location)" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-green-500 shadow-sm active:scale-90"><i class="ph-bold ph-map-pin"></i></button>
+                                        <button @click="currentTrip.gourmetList.splice(idx, 1)" class="text-slate-300"><i class="ph-bold ph-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 購物清單 -->
                         <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100">
                             <div class="flex items-center gap-2 mb-6">
                                 <i class="ph-fill ph-shopping-bag text-indigo-500 text-xl"></i>
-                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">必買清單</h3>
+                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">購物清單</h3>
                             </div>
                             <div class="flex gap-2 mb-6">
-                                <input v-model="newShopItem" @keyup.enter="addShopItem"
-                                    class="flex-1 bg-slate-50 px-4 py-3 rounded-xl outline-none text-xs font-bold"
-                                    placeholder="想買什麼？">
-                                <button @click="addShopItem"
-                                    class="bg-indigo-600 text-white px-6 rounded-xl text-xs font-black shadow-lg">ADD</button>
+                                <input v-model="newShopItem" @keyup.enter="addShopItem" class="flex-1 bg-slate-50 px-4 py-3 rounded-xl outline-none text-xs font-bold" placeholder="想買什麼？">
+                                <button @click="addShopItem" class="bg-indigo-600 text-white px-6 rounded-xl text-xs font-black shadow-lg shadow-indigo-100 active:scale-95 transition-transform">ADD</button>
                             </div>
                             <div class="space-y-1">
-                                <div v-for="(item, idx) in currentTrip.shoppingList"
-                                    class="flex items-center justify-between p-3 active:bg-slate-50 rounded-2xl transition-all">
-                                    <div class="flex items-center gap-4 flex-1" @click="item.bought = !item.bought">
-                                        <i :class="item.bought ? 'ph-fill ph-check-square text-indigo-600' : 'ph-bold ph-square text-slate-200'"
-                                            class="text-2xl"></i>
-                                        <span :class="item.bought ? 'line-through text-slate-300' : 'text-slate-700'"
-                                            class="font-bold text-sm">{{ item.name }}</span>
+                                <div v-for="(item, idx) in currentTrip.shoppingList" class="flex items-center justify-between p-3 active:bg-slate-50 rounded-2xl transition-all" @click="item.bought = !item.bought">
+                                    <div class="flex items-center gap-4 flex-1">
+                                        <i :class="item.bought ? 'ph-fill ph-check-square text-indigo-600' : 'ph-bold ph-square text-slate-200'" class="text-2xl"></i>
+                                        <span :class="item.bought ? 'line-through text-slate-300 opacity-50' : 'text-slate-700'" class="font-bold text-sm">{{ item.name }}</span>
                                     </div>
-                                    <button @click="currentTrip.shoppingList.splice(idx, 1)"
-                                        class="text-slate-200 p-2"><i class="ph-bold ph-trash"></i></button>
+                                    <button @click.stop="currentTrip.shoppingList.splice(idx, 1)" class="text-slate-200 p-2"><i class="ph-bold ph-trash"></i></button>
                                 </div>
                             </div>
                         </div>
                     </section>
                 </main>
 
-                <!-- 底部導覽 -->
-                <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass px-4 flex justify-between items-center z-[100] rounded-t-[40px]"
-                    :style="{ paddingBottom: 'calc(var(--sab) + 1.2rem)', paddingTop: '0.8rem' }">
-                    <button v-for="tab in tabs" @click="activeTab = tab.id"
-                        :class="activeTab === tab.id ? 'text-indigo-600' : 'text-slate-300'"
-                        class="flex flex-col items-center gap-1 flex-1 transition-all"><i
-                            :class="[activeTab === tab.id ? 'ph-fill' : 'ph-bold', tab.icon]" class="text-2xl"></i><span
-                            class="text-[8px] font-black uppercase tracking-widest">{{ tab.name }}</span></button>
+                <!-- 底部導覽 (iPhone Safe Area 適配) -->
+                <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass px-4 flex justify-between items-center z-[100] rounded-t-[40px]" 
+                     :style="{ paddingBottom: 'calc(var(--sab) + 1.2rem)', paddingTop: '1rem' }">
+                    <button v-for="tab in tabs" @click="activeTab = tab.id" 
+                            :class="activeTab === tab.id ? 'text-indigo-600' : 'text-slate-300'" 
+                            class="flex flex-col items-center gap-1 flex-1 transition-all">
+                        <i :class="[activeTab === tab.id ? 'ph-fill' : 'ph-bold', tab.icon]" class="text-2xl"></i>
+                        <span class="text-[8px] font-black uppercase tracking-widest">{{ tab.name }}</span>
+                    </button>
                 </nav>
             </div>
         </transition>
 
-        <!-- 天氣詳細彈窗 -->
-        <div v-if="showWeatherDetail" class="fixed inset-0 z-[200] bg-white flex flex-col"
-            :style="{ paddingTop: 'var(--sat)' }">
-            <header class="p-6 flex justify-between items-center border-b">
-                <h2 class="text-xl font-black text-slate-800">天氣詳情</h2><button @click="showWeatherDetail = false"
-                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center"><i
-                        class="ph-bold ph-x"></i></button>
-            </header>
-            <div class="p-8 flex-1 overflow-y-auto" v-if="currentDayWeather">
-                <div
-                    class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-[40px] text-white shadow-xl mb-8">
-                    <div class="text-6xl font-black mb-4">{{ Math.round(currentDayWeather.tempMax) }}°</div>
-                    <p class="text-xl font-bold mb-6">{{ currentDayWeather.condition }}</p>
-                    <div class="grid grid-cols-2 gap-4 border-t border-white/20 pt-6">
-                        <div>
-                            <p class="text-[10px] opacity-60 uppercase mb-1">高 / 低</p>
-                            <p class="font-bold">{{ currentDayWeather.tempMax }}° / {{ currentDayWeather.tempMin }}°</p>
+        <!-- 天氣詳細彈窗 (全螢幕適配) -->
+        <transition name="fade">
+            <div v-if="showWeatherDetail" class="fixed inset-0 z-[300] bg-white flex flex-col" :style="{ paddingTop: 'var(--sat)' }">
+                <header class="p-6 flex justify-between items-center border-b border-slate-50">
+                    <h2 class="text-xl font-black text-slate-800">目的地預報</h2>
+                    <button @click="showWeatherDetail = false" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center active:scale-90"><i class="ph-bold ph-x"></i></button>
+                </header>
+                <div class="p-8 flex-1 overflow-y-auto no-scrollbar" v-if="currentDayWeather">
+                    <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-[40px] text-white shadow-2xl mb-8 relative overflow-hidden">
+                        <i class="ph-fill ph-cloud-sun absolute -right-4 -bottom-4 text-9xl opacity-20"></i>
+                        <div class="relative z-10">
+                            <div class="text-6xl font-black mb-4 leading-none">{{ Math.round(currentDayWeather.tempMax) }}°</div>
+                            <p class="text-xl font-bold mb-6 tracking-wide">{{ currentDayWeather.condition }}</p>
+                            <div class="grid grid-cols-2 gap-4 border-t border-white/20 pt-6">
+                                <div><p class="text-[10px] opacity-60 uppercase font-black tracking-widest">High / Low</p><p class="text-lg font-bold">{{ currentDayWeather.tempMax }}° / {{ currentDayWeather.tempMin }}°</p></div>
+                                <div><p class="text-[10px] opacity-60 uppercase font-black tracking-widest">Rain Chance</p><p class="text-lg font-bold">{{ currentDayWeather.rainProb }}%</p></div>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-[10px] opacity-60 uppercase mb-1">降雨機率</p>
-                            <p class="font-bold">{{ currentDayWeather.rainProb }}%</p>
-                        </div>
+                    </div>
+                    <div class="bg-indigo-50 p-6 rounded-[32px] border border-indigo-100">
+                        <h4 class="font-black text-indigo-900 mb-2 text-sm uppercase tracking-widest">💡 旅行建議</h4>
+                        <p class="text-sm text-indigo-700 leading-relaxed font-medium">{{ weatherAdvice }}</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </transition>
     </div>
 
     <script>
@@ -542,6 +412,7 @@
                 const exchangeRate = ref(1);
                 const destSuggestions = ref([]);
                 const searchLoading = ref(false);
+                const viewingDoc = ref(null); // 新增：目前正在查看的文件
 
                 const newShopItem = ref('');
                 const newGourmet = reactive({ type: '', name: '', location: '' });
@@ -549,10 +420,10 @@
                 const currencyList = ['HKD', 'JPY', 'KRW', 'TWD', 'USD', 'EUR', 'THB', 'GBP'];
                 const categories = ['景點', '美食', '交通', '住宿', '購物'];
                 const tabs = [
-                    { id: 'itinerary', name: '行程規劃', icon: 'ph-calendar-blank' },
-                    { id: 'documents', name: '行程文件', icon: 'ph-files' },
-                    { id: 'flight', name: '航班資訊', icon: 'ph-airplane-tilt' },
-                    { id: 'expense', name: '費用記帳', icon: 'ph-wallet' },
+                    { id: 'itinerary', name: '行程', icon: 'ph-calendar-blank' },
+                    { id: 'documents', name: '文件', icon: 'ph-files' },
+                    { id: 'flight', name: '航班', icon: 'ph-airplane-tilt' },
+                    { id: 'expense', name: '記帳', icon: 'ph-wallet' },
                     { id: 'lists', name: '清單', icon: 'ph-list-checks' }
                 ];
                 const weatherCodeMap = { 0: "晴朗", 1: "晴時多雲", 2: "多雲", 3: "陰天", 45: "霧", 48: "霧", 51: "毛毛雨", 61: "微雨", 63: "陣雨", 65: "大雨", 71: "小雪", 80: "陣雨", 95: "雷暴" };
@@ -560,7 +431,7 @@
                 const formTrip = reactive({ id: null, name: '', destination: '', startDate: '', endDate: '', baseCurrency: 'HKD', targetCurrency: 'JPY' });
 
                 onMounted(() => {
-                    const saved = localStorage.getItem('travel_master_pro_v13');
+                    const saved = localStorage.getItem('travel_master_pro_v14');
                     if (saved && JSON.parse(saved).length > 0) {
                         trips.value = JSON.parse(saved);
                     } else {
@@ -671,7 +542,7 @@
                         gourmetList: [
                             { type: "拉麵", name: "一蘭總店", location: "中洲一蘭", tried: false },
                             { type: "燒肉", name: "Nikuyaki Benjamin", location: "Nikuyaki Benjamin", tried: false },
-                            { type: "海鮮丼", name: "博多シーフードうお田", location: "博多シーフードうお田", tried: false },
+                            { type: "明太子丼飯", name: "博多シーフードうお田", location: "博多シーフードうお田", tried: false },
                         ],
                         documents: [
                             { name: "Visit Japan Web", type: "link", value: "https://www.vjw.digital.go.jp/main/#/vjwplo001" },
@@ -679,9 +550,7 @@
                         ]
                     };
                 };
-
-
-                watch(trips, (val) => localStorage.setItem('travel_master_pro_v13', JSON.stringify(val)), { deep: true });
+                watch(trips, (val) => localStorage.setItem('travel_master_pro_v14', JSON.stringify(val)), { deep: true });
 
                 const openForm = (trip = null) => {
                     isEditing.value = !!trip;
@@ -696,7 +565,7 @@
                         const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(formTrip.destination)}&count=5&language=zh&format=json`);
                         const data = await res.json();
                         destSuggestions.value = data.results || [];
-                    } catch (e) { } finally { searchLoading.value = false; }
+                    } catch (e) {} finally { searchLoading.value = false; }
                 };
 
                 const selectSuggestion = (s) => {
@@ -731,7 +600,8 @@
 
                 const fetchExchangeRate = async (trip) => {
                     try {
-                        const res = await fetch(`https://v6.exchangerate-api.com/v6/876999c1d28b0372209bb713/latest/${trip.baseCurrency}`);
+                        const apiKey = "876999c1d28b0372209bb713";
+                        const res = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/${trip.baseCurrency}`);
                         const data = await res.json();
                         if (data.result === 'success') exchangeRate.value = data.conversion_rates[trip.targetCurrency].toFixed(4);
                     } catch (e) { exchangeRate.value = 'N/A'; }
@@ -749,52 +619,62 @@
                                 if (wData.daily) day.weather = { tempMax: wData.daily.temperature_2m_max[i], tempMin: wData.daily.temperature_2m_min[i], rainProb: wData.daily.precipitation_probability_max[i], condition: weatherCodeMap[wData.daily.weather_code[i]] || "未知" };
                             });
                         }
-                    } catch (e) { }
+                    } catch (e) {}
                 };
 
-                // 文件處理
                 const uploadFile = (event) => {
                     const file = event.target.files[0];
                     if (!file) return;
+
+                    // 編輯名稱彈窗
+                    let customName = prompt("請輸入文件名稱", file.name);
+                    if (customName === null) return; 
+
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        currentTrip.value.documents.push({
-                            name: file.name,
-                            type: file.type === 'application/pdf' ? 'pdf' : 'image',
-                            value: e.target.result
+                        currentTrip.value.documents.push({ 
+                            name: customName || file.name, 
+                            type: file.type === 'application/pdf' ? 'pdf' : 'image', 
+                            value: e.target.result 
                         });
                     };
                     reader.readAsDataURL(file);
+                    event.target.value = ""; 
                 };
 
-                const openDoc = (doc) => {
-                    if (doc.type === 'link') window.open(doc.value, '_blank');
-                    else { const win = window.open(); win.document.write(`<iframe src="${doc.value}" frameborder="0" style="border:0; width:100%; height:100%;"></iframe>`); }
+                const handleDocClick = (doc) => {
+                    if (doc.type === 'link') {
+                        window.open(doc.value, '_blank');
+                    } else {
+                        // 轉跳到 App 內部的閱讀器
+                        viewingDoc.value = doc;
+                    }
                 };
 
-                // 清單處理
                 const addShopItem = () => { if(newShopItem.value) { currentTrip.value.shoppingList.push({name: newShopItem.value, bought: false}); newShopItem.value = ''; } };
                 const addGourmetItem = () => { if(newGourmet.name) { currentTrip.value.gourmetList.push({ ...newGourmet, tried: false }); newGourmet.type = ''; newGourmet.name = ''; newGourmet.location = ''; } };
 
                 return {
-                    trips, currentTrip, showFormPage, isEditing, formTrip, activeTab, currentDay, showWeatherDetail, exchangeRate, destSuggestions, searchLoading, currencyList, categories, tabs, newShopItem, newGourmet,
-                    openForm, searchDestinations, selectSuggestion, saveTrip, selectTrip, uploadFile, openDoc, addShopItem, addGourmetItem,
+                    trips, currentTrip, showFormPage, isEditing, formTrip, activeTab, currentDay, showWeatherDetail, exchangeRate, destSuggestions, searchLoading, currencyList, categories, tabs, newShopItem, newGourmet, viewingDoc,
+                    openForm, searchDestinations, selectSuggestion, saveTrip, selectTrip, uploadFile, handleDocClick, addShopItem, addGourmetItem,
                     sortedSpots: computed(() => (currentDay.value !== null && currentTrip.value) ? [...currentTrip.value.itinerary[currentDay.value].spots].sort((a, b) => a.time.localeCompare(b.time)) : []),
                     totalTargetAmount: computed(() => currentTrip.value?.expenses.reduce((s, e) => s + (e.amount || 0), 0) || 0),
                     totalBaseAmount: computed(() => exchangeRate.value === 'N/A' ? 'N/A' : (computed(() => currentTrip.value?.expenses.reduce((s, e) => s + (e.amount || 0), 0) || 0).value / exchangeRate.value).toFixed(2)),
-                    currentViewTitle: computed(() => (currentDay.value !== null && activeTab.value === 'itinerary') ? `Day ${currentDay.value + 1}` : tabs.find(t => t.id === activeTab.value).name),
+                    currentViewTitle: computed(() => (currentDay.value !== null && activeTab.value === 'itinerary') ? `Day ${currentDay.value+1}` : tabs.find(t => t.id === activeTab.value).name),
                     currentDayWeather: computed(() => currentDay.value !== null ? currentTrip.value.itinerary[currentDay.value].weather : null),
+                    weatherAdvice: computed(() => {
+                        const dw = currentTrip.value?.itinerary[currentDay.value]?.weather;
+                        return dw && dw.rainProb > 40 ? "降雨機率高，出門請務必攜帶雨具，或考慮安排較多室內行程。" : "天氣預報良好，非常適合安排戶外活動，祝您旅遊愉快！";
+                    }),
                     addSpot: () => currentTrip.value.itinerary[currentDay.value].spots.push({ time: "10:00", category: "景點", activity: "", address: "", note: "" }),
                     removeSpot: (spot) => currentTrip.value.itinerary[currentDay.value].spots.splice(currentTrip.value.itinerary[currentDay.value].spots.indexOf(spot), 1),
-                    addExpense: () => { const now = new Date(); currentTrip.value.expenses.unshift({ item: '', amount: 0, note: '', timestamp: `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}` }); },
-                    addFlight: () => currentTrip.value.flights.push({ no: '', from: '', fromTime: '00:00', fromTerminal: '', to: '', toTime: '00:00', toTerminal: '' }),
-                    addLinkPrompt: () => { const name = prompt("連結名稱"), url = prompt("網址 (https://)"); if (name && url) currentTrip.value.documents.push({ name, type: 'link', value: url }); },
+                    addExpense: () => { const now = new Date(); currentTrip.value.expenses.unshift({ item: '', amount: 0, note: '', timestamp: `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}` }); },
+                    addLinkPrompt: () => { const name = prompt("連結名稱"), url = prompt("網址 (https://)"); if(name && url) currentTrip.value.documents.push({ name, type: 'link', value: url }); },
                     openGoogleMap: (q) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, '_blank'),
-                    deleteTrip: (id) => confirm('確定刪除？') && (trips.value = trips.value.filter(t => t.id !== id))
+                    deleteTrip: (id) => confirm('確定刪除此旅程？') && (trips.value = trips.value.filter(t => t.id !== id))
                 };
             }
         }).mount('#app');
     </script>
 </body>
-
 </html>
