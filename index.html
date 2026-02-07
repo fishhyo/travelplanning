@@ -143,8 +143,24 @@
                         <div v-for="(f, fIdx) in currentTrip.flights" class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative">
                             <div class="flex justify-between items-center mb-6"><input v-model="f.no" class="font-mono font-black text-2xl text-slate-900 uppercase w-full outline-none" placeholder="航班號"><button @click="currentTrip.flights.splice(fIdx, 1)" class="text-slate-200"><i class="ph-bold ph-trash"></i></button></div>
                             <div class="grid grid-cols-2 gap-6">
-                                <div class="space-y-3"><p class="text-[10px] font-black text-slate-400 uppercase">出發</p><input v-model="f.from" class="text-3xl font-black w-full outline-none"><div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2"><span class="text-[8px] font-black text-slate-300">Terminal</span><input v-model="f.fromTerminal" class="w-full bg-transparent text-[10px] font-black py-1" placeholder="航廈"></div><input v-model="f.fromTime" type="time" class="text-sm font-bold w-full text-indigo-600 outline-none"></div>
-                                <div class="space-y-3 text-right"><p class="text-[10px] font-black text-slate-400 uppercase">到達</p><input v-model="f.to" class="text-3xl font-black w-full text-right outline-none text-indigo-600"><div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2 flex-row-reverse"><span class="text-[8px] font-black text-slate-300">Terminal</span><input v-model="f.toTerminal" class="w-full bg-transparent text-[10px] font-black py-1 text-right" placeholder="航廈"></div><input v-model="f.toTime" type="time" class="text-sm font-bold w-full text-right text-indigo-600 outline-none"></div>
+                                <div class="space-y-3">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase">出發</p>
+                                    <input v-model="f.from" class="text-3xl font-black w-full outline-none">
+                                    <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2">
+                                        <span class="text-[8px] font-black text-slate-300">Terminal</span>
+                                        <input v-model="f.fromTerminal" class="w-full bg-transparent text-[10px] font-black py-1" placeholder="航廈">
+                                    </div>
+                                    <input v-model="f.fromTime" type="time" class="text-sm font-bold w-full text-indigo-600 outline-none">
+                                </div>
+                                <div class="space-y-3 text-right">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase">到達</p>
+                                    <input v-model="f.to" class="text-3xl font-black w-full text-right outline-none text-indigo-600">
+                                    <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2">
+                                        <span class="text-[8px] font-black text-slate-300">Terminal</span>
+                                        <input v-model="f.fromTerminal" class="w-full bg-transparent text-[10px] font-black py-1" placeholder="航廈">
+                                    </div>
+                                    <input v-model="f.toTime" type="time" class="text-sm font-bold w-full text-right text-indigo-600 outline-none">
+                                </div>
                             </div>
                         </div>
                         <button @click="addFlight" class="w-full py-4 rounded-2xl bg-slate-900 text-white text-xs font-black uppercase">+ 新增航班</button>
@@ -249,42 +265,55 @@
                         itinerary: [
                             { dateDisplay: "2月10日 (二)", spots: [
                                 { time: "12:30", category: "交通", activity: "機場至飯店 (Hotel Wa Hakata)", address: "HOTEL WA HAKATA 7-3 Tenyamachi, Hakata Ward, Fukuoka, 812-0025日本", note: "機場接駁車至國內航廈 - 機場線地鐵 - 中洲川端站 - 步行8分鐘" },
-                                { time: "14:00", category: "美食", activity: "Lunch", address: "", note: "" },
+                                { time: "14:00", category: "美食", activity: "Lunch", address: "博多シーフードうお田", note: "明太子丼飯" },
                                 { time: "15:30", category: "購物", activity: "Parco 行街", address: "2 Chome-11-1 Tenjin, Chuo Ward, Fukuoka, 810-0001日本", note: "" },
-                                { time: "19:00", category: "美食", activity: "Dinner", address: "", note: "" }
+                                { time: "16:30", category: "購物", activity: "Mina 行街", address: "Mina 天神", note: "" },
+                                { time: "19:00", category: "美食", activity: "Dinner", address: "一蘭拉麵 總本店", note: "" }
                             ]},
                             { dateDisplay: "2月11日 (三)", spots: [
+                                { time: "10:00", category: "美食", activity: "breakfast", address: "藍瓶咖啡 福岡天神店 ", note: "coffee shop" },
                                 { time: "11:00", category: "購物", activity: "Shopping", address: "BILLY'S FUKUOKA", note: "" },
                                 { time: "11:30", category: "購物", activity: "Shopping", address: "Kinetics Fukuoka", note: "" },
                                 { time: "13:00", category: "美食", activity: "Lunch", address: "", note: "" },
-                                { time: "19:00", category: "美食", activity: "Dinner", address: "", note: "" }
+                                { time: "15:00", category: "購物", activity: "shopping", address: "天神地下街", note: "" },
+                                { time: "19:00", category: "美食", activity: "Dinner", address: "葫蘆壽司", note: "壽司" }
                             ] },
                             { dateDisplay: "2月12日 (四)", spots: [
+                                { time: "10:00", category: "美食", activity: "breakfast", address: "Dacomecca", note: "coffee shop" },
                                 { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
                                 { time: "17:05", category: "交通", activity: "Sam 抵達福岡", address: "FUK Airport", note: "Sam arrive @17:05" },
                                 { time: "19:30", category: "美食", activity: "Dinner @燒肉", address: "Nikuyaki Benjamin", note: "要BOOK枱!!!! https://www.tablecheck.com/en/nikuyaki-benjamin/reserve/menu" }
                             ]},
                             { dateDisplay: "2月13日 (五)", spots: [
                                 { time: "09:00", category: "交通", activity: "Car Pick up", address: "日本,福岡,Fukuoka Fukuoka-shi 1-12-7 Hakataekihigashi, Hakata-ku", note: "博多站新幹線築紫口" },
-                                { time: "10:30", category: "景點", activity: "太宰府天滿宮 & Lunch", address: "太宰府天滿宮", note: "" },
+                                { time: "10:30", category: "景點", activity: "太宰府天滿宮", address: "太宰府天滿宮", note: "" },
+                                { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
                                 { time: "14:00", category: "景點", activity: "浮羽稻荷神社", address: "浮羽稻荷神社", note: "" },
                                 { time: "16:00", category: "購物", activity: "鳥栖 Outlet", address: "Tosu Premium Outlets", note: "" },
-                                { time: "18:30", category: "美食", activity: "Dinner @ Outlet", address: "", note: "" }
+                                { time: "18:30", category: "美食", activity: "Dinner @ Outlet", address: "Tosu Premium Outlets", note: "" }
                             ]},
                             { dateDisplay: "2月14日 (六)", spots: [
                                 { time: "10:00", category: "景點", activity: "糸島 (Itoshima)", address: "糸島", note: "" },
-                                { time: "12:30", category: "美食", activity: "糸島海鮮堂", address: "糸島海鮮堂 二見ヶ浦本店", note: "需預約: https://www.itoshima-seafoodrestaurant.com/res/day.php?date=2026-02-14" },
-                                { time: "14:30", category: "景點", activity: "櫻井二見ヶ浦 / 二丈福井", address: "Sakurai Futamigaura's Couple Stones", note: "" },
+                                { time: "12:30", category: "美食", activity: "Lunch 糸島海鮮堂", address: "糸島海鮮堂 二見ヶ浦本店", note: "需預約: https://www.itoshima-seafoodrestaurant.com/res/day.php?date=2026-02-14" },
+                                { time: "14:30", category: "景點", activity: "櫻井二見ヶ浦 / 二丈福井", address: "Sakurai Futamigaura's Couple Stones", note: "夫妻石" },
                                 { time: "16:00", category: "景點", activity: "白絲瀑布", address: "白絲瀑布", note: "460-6 Shiraito, Itoshima, Fukuoka 819-1154日本" },
-                                { time: "18:30", category: "交通", activity: "19:00 前還車", address: "", note: "" }
+                                { time: "18:30", category: "交通", activity: "19:00 前還車", address: "日本,福岡,Fukuoka Fukuoka-shi 1-12-7 Hakataekihigashi, Hakata-ku", note: "博多站新幹線築紫口" },
+                                { time: "19:30", category: "美食", activity: "Dinner @博多站", address: "博多站", note: "麵屋街，一番街，阪急foodcourt" },
+                                { time: "20:30", category: "購物", activity: "博多站附近商場", address: "博多站", note: "阪急百貨，AMU PLAZA，kitte0101（駿河屋），巴士總站樓上商場（一番賞，扭蛋，namco）" }
+
                             ]},
                             { dateDisplay: "2月15日 (日)", spots: [
-                                { time: "13:00", category: "購物", activity: "博多運河城行街", address: "Canal City Hakata", note: "" },
-                                { time: "15:00", category: "美食", activity: "FUK coffee (pudding)", address: "FUK Coffee 6-22 Gionmachi, Hakata Ward, Fukuoka, 812-0038日本", note: "" }
+                                { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
+                                { time: "13:00", category: "購物", activity: "博多運河城行街", address: "Canal City Hakata", note: "Jump store, 扭蛋, sanrio" },
+                                { time: "15:00", category: "美食", activity: "FUK coffee (pudding)", address: "FUK Coffee 6-22 Gionmachi, Hakata Ward, Fukuoka, 812-0038日本", note: "" },
+                                { time: "19:00", category: "美食", activity: "Dinner", address: "", note: "" },
+
                             ]},
                             { dateDisplay: "2月16日 (一)", spots: [
                                 { time: "10:00", category: "交通", activity: "Check out hotel", address: "", note: "" },
-                                { time: "11:30", category: "景點", activity: "櫛田神社", address: "櫛田神社", note: "" }
+                                { time: "11:30", category: "景點", activity: "櫛田神社", address: "櫛田神社", note: "" },
+                                { time: "12:00", category: "美食", activity: "Lunch", address: "", note: "" },
+                                { time: "15:00", category: "交通", activity: "前往機場", address: "Fukuoka Airport", note: "flight at 1805, 需要提前到達" },
                             ]}
                         ],
                         flights: [
