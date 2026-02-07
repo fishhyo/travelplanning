@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hello World</title>
+    <title>Travel Master Pro</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -83,7 +83,7 @@
                 </header>
 
                 <main class="flex-1 overflow-y-auto safe-area-bottom-scroll p-4 no-scrollbar">
-                    <!-- 行程規劃 (具備排序功能) -->
+                    <!-- 行程規劃 -->
                     <section v-if="activeTab === 'itinerary'">
                         <div v-if="currentDay === null" class="space-y-3">
                             <div v-for="(day, idx) in currentTrip.itinerary" @click="currentDay = idx" class="bg-white p-5 rounded-[28px] border border-slate-100 flex justify-between items-center shadow-sm">
@@ -93,7 +93,16 @@
                         </div>
                         <div v-else class="space-y-4">
                             <button @click="currentDay = null" class="text-xs font-black text-indigo-600 flex items-center gap-1"><i class="ph-bold ph-arrow-left"></i> 返回天數</button>
-                            <!-- 顯示排序後的景點 -->
+                            
+                            <!-- 每日行程概要欄位 -->
+                            <div class="bg-indigo-50 p-4 rounded-3xl border border-indigo-100 mb-2">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <i class="ph-fill ph-note-pencil text-indigo-600"></i>
+                                    <span class="text-[10px] font-black text-indigo-900 uppercase tracking-widest">今日行程概要</span>
+                                </div>
+                                <textarea v-model="currentTrip.itinerary[currentDay].summary" class="w-full bg-transparent text-sm font-bold text-indigo-800 outline-none placeholder:text-indigo-200" rows="2" placeholder="輸入今天的重點筆記..."></textarea>
+                            </div>
+
                             <div v-for="(spot, sIdx) in sortedSpots" :key="sIdx" class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
                                 <div class="flex justify-between items-center mb-4"><div class="flex gap-2"><input v-model="spot.time" type="time" class="font-mono font-bold text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg outline-none"><select v-model="spot.category" :class="'cat-'+spot.category" class="cat-tag outline-none appearance-none"><option v-for="c in categories" :value="c">{{c}}</option></select></div><button @click="removeSpot(spot)" class="text-slate-200"><i class="ph-bold ph-trash"></i></button></div>
                                 <input v-model="spot.activity" class="w-full font-black text-slate-800 text-lg mb-2 outline-none" placeholder="項目內容...">
@@ -104,23 +113,22 @@
                         </div>
                     </section>
                     
-                    <!-- 行程文件分頁 (替代原有的地圖) -->
+                    <!-- 行程文件分頁 -->
                     <section v-if="activeTab === 'documents'" class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
                             <button @click="$refs.fileInput.click()" class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2">
                                 <i class="ph-bold ph-image text-2xl text-indigo-600"></i>
-                                <span class="text-[10px] font-bold uppercase">上載圖片/PDF</span>
-                                <input type="file" ref="fileInput" class="hidden" accept="image/*,application/pdf" @change="uploadFile">
+                                <span class="text-[10px] font-bold uppercase">上載文件/相片</span>
+                                <!-- 支援廣泛格式：heic, png, jpg, pdf -->
+                                <input type="file" ref="fileInput" class="hidden" accept=".heic,image/png,image/jpeg,image/jpg,application/pdf" @change="uploadFile">
                             </button>
                             <button @click="addLinkPrompt" class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col items-center gap-2">
                                 <i class="ph-bold ph-link text-2xl text-indigo-600"></i>
                                 <span class="text-[10px] font-bold uppercase">新增網頁連結</span>
                             </button>
                         </div>
-
                         <div class="space-y-3">
-                            <h3 class="text-[10px] font-black text-slate-400 uppercase ml-2">我的文件清單 (如: Visit Japan Web, 門票)</h3>
-                            <div v-if="currentTrip.documents.length === 0" class="text-center py-10 opacity-20"><i class="ph-bold ph-folder-open text-5xl"></i><p class="text-xs font-bold mt-2">暫無文件</p></div>
+                            <h3 class="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">我的文件庫</h3>
                             <div v-for="(doc, dIdx) in currentTrip.documents" :key="dIdx" class="bg-white p-4 rounded-3xl border border-slate-100 flex items-center justify-between shadow-sm">
                                 <div class="flex items-center gap-4 flex-1 overflow-hidden" @click="openDoc(doc)">
                                     <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-indigo-600">
@@ -128,10 +136,7 @@
                                         <i v-else-if="doc.type === 'pdf'" class="ph-bold ph-file-pdf"></i>
                                         <i v-else class="ph-bold ph-image-square"></i>
                                     </div>
-                                    <div class="truncate">
-                                        <p class="font-bold text-slate-800 text-sm truncate">{{ doc.name }}</p>
-                                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">{{ doc.type }}</p>
-                                    </div>
+                                    <div class="truncate"><p class="font-bold text-slate-800 text-sm truncate">{{ doc.name }}</p></div>
                                 </div>
                                 <button @click="currentTrip.documents.splice(dIdx, 1)" class="text-slate-200 ml-4"><i class="ph-bold ph-x-circle text-xl"></i></button>
                             </div>
@@ -155,9 +160,9 @@
                                 <div class="space-y-3 text-right">
                                     <p class="text-[10px] font-black text-slate-400 uppercase">到達</p>
                                     <input v-model="f.to" class="text-3xl font-black w-full text-right outline-none text-indigo-600">
-                                    <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2">
+                                    <div class="flex items-center gap-1 bg-slate-50 rounded-lg px-2 flex-row-reverse">
                                         <span class="text-[8px] font-black text-slate-300">Terminal</span>
-                                        <input v-model="f.fromTerminal" class="w-full bg-transparent text-[10px] font-black py-1" placeholder="航廈">
+                                        <input v-model="f.toTerminal" class="w-full bg-transparent text-[10px] font-black py-1 text-right" placeholder="航廈">
                                     </div>
                                     <input v-model="f.toTime" type="time" class="text-sm font-bold w-full text-right text-indigo-600 outline-none">
                                 </div>
@@ -182,11 +187,62 @@
                         </div>
                     </section>
 
-                    <!-- 購物清單 -->
-                    <section v-if="activeTab === 'shopping'" class="space-y-4">
-                        <div class="bg-white p-6 rounded-[32px] shadow-sm">
-                            <div class="flex gap-2 mb-6"><input v-model="newShopItem" @keyup.enter="addShopItem" class="flex-1 bg-slate-50 px-4 py-3 rounded-xl outline-none text-xs font-bold" placeholder="必買清單..."><button @click="addShopItem" class="bg-indigo-600 text-white px-6 rounded-xl text-xs font-black shadow-lg">ADD</button></div>
-                            <div class="space-y-1"><div v-for="(item, idx) in currentTrip.shoppingList" class="flex items-center justify-between p-3 active:bg-slate-50 rounded-2xl transition-all"><div class="flex items-center gap-4 flex-1" @click="item.bought = !item.bought"><i :class="item.bought ? 'ph-fill ph-check-square text-indigo-600' : 'ph-bold ph-square text-slate-200'" class="text-2xl"></i><span :class="item.bought ? 'line-through text-slate-300' : 'text-slate-700'" class="font-bold text-sm">{{ item.name }}</span></div><button @click="currentTrip.shoppingList.splice(idx, 1)" class="text-slate-200 p-2"><i class="ph-bold ph-trash"></i></button></div></div>
+                    <!-- 清單管理頁面 (美食 + 購物) -->
+                    <section v-if="activeTab === 'lists'" class="space-y-8">
+                        <!-- 美食清單 -->
+                        <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100">
+                            <div class="flex items-center gap-2 mb-6">
+                                <i class="ph-fill ph-fork-knife text-rose-500 text-xl"></i>
+                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">美食必吃清單</h3>
+                            </div>
+                            <div class="space-y-4 mb-6">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input v-model="newGourmet.type" class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold" placeholder="類型 (如: 燒肉)">
+                                    <input v-model="newGourmet.name" class="bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold" placeholder="店家名稱">
+                                </div>
+                                <div class="flex gap-2">
+                                    <input v-model="newGourmet.location" class="flex-1 bg-slate-50 p-3 rounded-xl outline-none text-xs font-bold" placeholder="地點或地址">
+                                    <button @click="addGourmetItem" class="bg-rose-500 text-white px-6 rounded-xl text-xs font-black">ADD</button>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div v-for="(item, idx) in currentTrip.gourmetList" :key="idx" class="p-3 bg-slate-50 rounded-2xl flex items-center justify-between">
+                                    <div class="flex items-center gap-3 overflow-hidden">
+                                        <button @click="item.tried = !item.tried" :class="item.tried ? 'text-rose-500' : 'text-slate-200'">
+                                            <i :class="item.tried ? 'ph-fill ph-check-circle' : 'ph-bold ph-circle'" class="text-2xl"></i>
+                                        </button>
+                                        <div class="overflow-hidden">
+                                            <p class="text-xs font-black text-rose-600 uppercase">{{ item.type }}</p>
+                                            <p class="font-bold text-slate-800 truncate">{{ item.name }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button v-if="item.location" @click="openGoogleMap(item.location)" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-green-500 shadow-sm"><i class="ph-bold ph-map-pin"></i></button>
+                                        <button @click="currentTrip.gourmetList.splice(idx, 1)" class="text-slate-300"><i class="ph-bold ph-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 購物清單 -->
+                        <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100">
+                            <div class="flex items-center gap-2 mb-6">
+                                <i class="ph-fill ph-shopping-bag text-indigo-500 text-xl"></i>
+                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">必買清單</h3>
+                            </div>
+                            <div class="flex gap-2 mb-6">
+                                <input v-model="newShopItem" @keyup.enter="addShopItem" class="flex-1 bg-slate-50 px-4 py-3 rounded-xl outline-none text-xs font-bold" placeholder="想買什麼？">
+                                <button @click="addShopItem" class="bg-indigo-600 text-white px-6 rounded-xl text-xs font-black shadow-lg">ADD</button>
+                            </div>
+                            <div class="space-y-1">
+                                <div v-for="(item, idx) in currentTrip.shoppingList" class="flex items-center justify-between p-3 active:bg-slate-50 rounded-2xl transition-all">
+                                    <div class="flex items-center gap-4 flex-1" @click="item.bought = !item.bought">
+                                        <i :class="item.bought ? 'ph-fill ph-check-square text-indigo-600' : 'ph-bold ph-square text-slate-200'" class="text-2xl"></i>
+                                        <span :class="item.bought ? 'line-through text-slate-300' : 'text-slate-700'" class="font-bold text-sm">{{ item.name }}</span>
+                                    </div>
+                                    <button @click="currentTrip.shoppingList.splice(idx, 1)" class="text-slate-200 p-2"><i class="ph-bold ph-trash"></i></button>
+                                </div>
+                            </div>
                         </div>
                     </section>
                 </main>
@@ -201,14 +257,7 @@
         <!-- 天氣詳細彈窗 -->
         <div v-if="showWeatherDetail" class="fixed inset-0 z-[200] bg-white flex flex-col" :style="{ paddingTop: 'var(--sat)' }">
             <header class="p-6 flex justify-between items-center border-b"><h2 class="text-xl font-black text-slate-800">天氣詳情</h2><button @click="showWeatherDetail = false" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center"><i class="ph-bold ph-x"></i></button></header>
-            <div class="p-8 flex-1 overflow-y-auto" v-if="currentDayWeather">
-                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-[40px] text-white shadow-xl mb-8">
-                    <div class="text-6xl font-black mb-4">{{ Math.round(currentDayWeather.tempMax) }}°</div>
-                    <p class="text-xl font-bold mb-6">{{ currentDayWeather.condition }}</p>
-                    <div class="grid grid-cols-2 gap-4 border-t border-white/20 pt-6"><div><p class="text-[10px] opacity-60 uppercase mb-1">高 / 低</p><p class="font-bold">{{ currentDayWeather.tempMax }}° / {{ currentDayWeather.tempMin }}°</p></div><div><p class="text-[10px] opacity-60 uppercase mb-1">降雨機率</p><p class="font-bold">{{ currentDayWeather.rainProb }}%</p></div></div>
-                </div>
-                <div class="bg-indigo-50 p-6 rounded-3xl border border-indigo-100"><h4 class="font-black text-indigo-900 mb-2">旅行小提醒</h4><p class="text-sm text-slate-600">{{ weatherAdvice }}</p></div>
-            </div>
+            <div class="p-8 flex-1 overflow-y-auto" v-if="currentDayWeather"><div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-[40px] text-white shadow-xl mb-8"><div class="text-6xl font-black mb-4">{{ Math.round(currentDayWeather.tempMax) }}°</div><p class="text-xl font-bold mb-6">{{ currentDayWeather.condition }}</p><div class="grid grid-cols-2 gap-4 border-t border-white/20 pt-6"><div><p class="text-[10px] opacity-60 uppercase mb-1">高 / 低</p><p class="font-bold">{{ currentDayWeather.tempMax }}° / {{ currentDayWeather.tempMin }}°</p></div><div><p class="text-[10px] opacity-60 uppercase mb-1">降雨機率</p><p class="font-bold">{{ currentDayWeather.rainProb }}%</p></div></div></div></div>
         </div>
     </div>
 
@@ -227,27 +276,29 @@
                 const exchangeRate = ref(1);
                 const destSuggestions = ref([]);
                 const searchLoading = ref(false);
+                
                 const newShopItem = ref('');
+                const newGourmet = reactive({ type: '', name: '', location: '' });
 
-                const currencyList = ['HKD', 'JPY', 'TWD', 'USD', 'EUR', 'KRW', 'THB', 'GBP', 'AUD', 'CNY'];
+                const currencyList = ['HKD', 'JPY', 'KRW', 'TWD', 'USD', 'EUR', 'THB', 'GBP'];
                 const categories = ['景點', '美食', '交通', '住宿', '購物'];
                 const tabs = [
                     { id: 'itinerary', name: '行程規劃', icon: 'ph-calendar-blank' },
                     { id: 'documents', name: '行程文件', icon: 'ph-files' },
                     { id: 'flight', name: '航班資訊', icon: 'ph-airplane-tilt' },
                     { id: 'expense', name: '費用記帳', icon: 'ph-wallet' },
-                    { id: 'shopping', name: '購物清單', icon: 'ph-basket' }
+                    { id: 'lists', name: '清單', icon: 'ph-list-checks' }
                 ];
                 const weatherCodeMap = { 0: "晴朗", 1: "晴時多雲", 2: "多雲", 3: "陰天", 45: "霧", 48: "霧", 51: "毛毛雨", 61: "微雨", 63: "陣雨", 65: "大雨", 71: "小雪", 80: "陣雨", 95: "雷暴" };
 
                 const formTrip = reactive({ id: null, name: '', destination: '', startDate: '', endDate: '', baseCurrency: 'HKD', targetCurrency: 'JPY' });
 
                 onMounted(() => {
-                    const saved = localStorage.getItem('travel_master_pro_v12');
+                    const saved = localStorage.getItem('travel_master_pro_v13');
                     if (saved && JSON.parse(saved).length > 0) {
                         trips.value = JSON.parse(saved);
                     } else {
-                        trips.value = [fukuokaTrip(),koreaTrip()];
+                        trips.value = [fukuokaTrip()];
                     }
                 });
 
@@ -272,8 +323,8 @@
                             ]},
                             { dateDisplay: "2月11日 (三)", spots: [
                                 { time: "10:00", category: "美食", activity: "breakfast", address: "藍瓶咖啡 福岡天神店 ", note: "coffee shop" },
-                                { time: "11:00", category: "購物", activity: "Shopping", address: "BILLY'S FUKUOKA", note: "" },
-                                { time: "11:30", category: "購物", activity: "Shopping", address: "Kinetics Fukuoka", note: "" },
+                                { time: "11:00", category: "購物", activity: "Shopping", address: "BILLY'S FUKUOKA", note: "睇鞋" },
+                                { time: "11:30", category: "購物", activity: "Shopping", address: "Kinetics Fukuoka", note: "睇鞋" },
                                 { time: "13:00", category: "美食", activity: "Lunch", address: "", note: "" },
                                 { time: "15:00", category: "購物", activity: "shopping", address: "天神地下街", note: "" },
                                 { time: "19:00", category: "美食", activity: "Dinner", address: "葫蘆壽司", note: "壽司" }
@@ -325,53 +376,17 @@
                         shoppingList: [],
                         documents: [
                             { name: "Visit Japan Web", type: "link", value: "https://www.vjw.digital.go.jp/main/#/vjwplo001" },
-                            { name: "飯店確認單 (PDF示範)", type: "pdf", value: "" }
-                        ]
-                    };
-                };
-                
-                const koreaTrip = () => {
-                    return {
-                        id: 20260204,
-                        name: "爛賭婆之旅",
-                        destination: "Seoul",
-                        startDate: "2026-02-04",
-                        endDate: "2026-02-12",
-                        baseCurrency: "HKD",
-                        targetCurrency: "KRW",
-                        itinerary: [
-                            { dateDisplay: "2月4日 (日)", spots: []},
-                            { dateDisplay: "2月5日 (一)", spots: []},
-                            { dateDisplay: "2月6日 (二)", spots: []},
-                            { dateDisplay: "2月7日 (三)", spots: []},
-                            { dateDisplay: "2月8日 (四)", spots: []},
-                            { dateDisplay: "2月9日 (五)", spots: []},
-                            { dateDisplay: "2月10日 (六)", spots: []},
-                            { dateDisplay: "2月11日 (日)", spots: []},
-                            { dateDisplay: "2月12日 (一)", spots: []}
-                        ],
-                        flights: [
-                            { no: "CX418", from: "HKG", fromTime: "14:05", fromTerminal: "1", to: "ICN", toTime: "18:35", toTerminal: "1" },
-                            { no: "CX411", from: "ICN", fromTime: "15:00", fromTerminal: "1", to: "HKG", toTime: "18:10", toTerminal: "1" }
-                        ],
-                        expenses: [],
-                        shoppingList: [],
-                        documents: [
-                            { name: "korea pre-arrival card", type: "link", value: "" },
-                            { name: "飯店確認單 (PDF示範)", type: "pdf", value: "" }
+                            { name: "schedule notes", type: "link", value: "https://www.icloud.com/notes/046XOdhTVDFWfX5j25LGHPI6w#Fukuoka_2026" },
                         ]
                     };
                 };
 
-                watch(trips, (val) => localStorage.setItem('travel_master_pro_v12', JSON.stringify(val)), { deep: true });
+            
+                watch(trips, (val) => localStorage.setItem('travel_master_pro_v13', JSON.stringify(val)), { deep: true });
 
                 const openForm = (trip = null) => {
                     isEditing.value = !!trip;
-                    if (trip) {
-                        Object.assign(formTrip, JSON.parse(JSON.stringify(trip)));
-                    } else {
-                        Object.assign(formTrip, { id: null, name: '', destination: '', startDate: '', endDate: '', baseCurrency: 'HKD', targetCurrency: 'JPY' });
-                    }
+                    Object.assign(formTrip, trip || { id: null, name: '', destination: '', startDate: '', endDate: '', baseCurrency: 'HKD', targetCurrency: 'JPY' });
                     showFormPage.value = true;
                 };
 
@@ -393,33 +408,31 @@
                 const saveTrip = () => {
                     if (!formTrip.destination || !formTrip.startDate || !formTrip.endDate) return;
                     if (isEditing.value) {
-                        const index = trips.value.findIndex(t => t.id === formTrip.id);
-                        trips.value[index] = { ...trips.value[index], ...JSON.parse(JSON.stringify(formTrip)) };
-                        currentTrip.value = trips.value[index];
+                        const idx = trips.value.findIndex(t => t.id === formTrip.id);
+                        trips.value[idx] = { ...trips.value[idx], ...JSON.parse(JSON.stringify(formTrip)) };
+                        currentTrip.value = trips.value[idx];
                     } else {
-                        const start = new Date(formTrip.startDate);
-                        const end = new Date(formTrip.endDate);
-                        const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+                        const start = new Date(formTrip.startDate), end = new Date(formTrip.endDate);
+                        const diff = Math.ceil((end - start) / (86400000)) + 1;
                         const itinerary = Array.from({ length: diff }, (_, i) => {
                             const d = new Date(start); d.setDate(start.getDate() + i);
-                            return { dateDisplay: d.toLocaleDateString('zh-HK', { month: 'short', day: 'numeric', weekday: 'short' }), spots: [], weather: null };
+                            return { dateDisplay: d.toLocaleDateString('zh-HK', { month: 'short', day: 'numeric', weekday: 'short' }), summary: '', spots: [], weather: null };
                         });
-                        trips.value.push({ ...JSON.parse(JSON.stringify(formTrip)), id: Date.now(), itinerary, flights: [], expenses: [], shoppingList: [], documents: [] });
+                        trips.value.push({ ...JSON.parse(JSON.stringify(formTrip)), id: Date.now(), itinerary, flights: [], expenses: [], shoppingList: [], gourmetList: [], documents: [] });
                     }
                     showFormPage.value = false;
                 };
 
                 const selectTrip = (trip) => {
                     currentTrip.value = trip;
-                    if (!currentTrip.value.documents) currentTrip.value.documents = [];
-                    fetchAllWeather(trip);
+                    if (!currentTrip.value.gourmetList) currentTrip.value.gourmetList = [];
                     fetchExchangeRate(trip);
+                    fetchAllWeather(trip);
                 };
 
                 const fetchExchangeRate = async (trip) => {
                     try {
-                        const apiKey = "876999c1d28b0372209bb713";
-                        const res = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/${trip.baseCurrency}`);
+                        const res = await fetch(`https://v6.exchangerate-api.com/v6/876999c1d28b0372209bb713/latest/${trip.baseCurrency}`);
                         const data = await res.json();
                         if (data.result === 'success') exchangeRate.value = data.conversion_rates[trip.targetCurrency].toFixed(4);
                     } catch (e) { exchangeRate.value = 'N/A'; }
@@ -440,78 +453,45 @@
                     } catch (e) {}
                 };
 
-                // 文件上傳處理
+                // 文件處理
                 const uploadFile = (event) => {
                     const file = event.target.files[0];
                     if (!file) return;
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        currentTrip.value.documents.push({
-                            name: file.name,
-                            type: file.type.includes('pdf') ? 'pdf' : 'image',
-                            value: e.target.result
+                        currentTrip.value.documents.push({ 
+                            name: file.name, 
+                            type: file.type === 'application/pdf' ? 'pdf' : 'image', 
+                            value: e.target.result 
                         });
                     };
                     reader.readAsDataURL(file);
                 };
 
-                const addLinkPrompt = () => {
-                    const name = prompt("請輸入連結名稱 (如: Visit Japan Web)");
-                    if (!name) return;
-                    const url = prompt("請輸入 URL 網址 (需包含 http:// 或 https://)");
-                    if (url) {
-                        currentTrip.value.documents.push({ name, type: 'link', value: url });
-                    }
-                };
-
                 const openDoc = (doc) => {
-                    if (doc.type === 'link') {
-                        window.open(doc.value, '_blank');
-                    } else {
-                        const win = window.open();
-                        win.document.write(`<iframe src="${doc.value}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
-                    }
+                    if (doc.type === 'link') window.open(doc.value, '_blank');
+                    else { const win = window.open(); win.document.write(`<iframe src="${doc.value}" frameborder="0" style="border:0; width:100%; height:100%;"></iframe>`); }
                 };
 
-                const removeSpot = (spot) => {
-                    const idx = currentTrip.value.itinerary[currentDay.value].spots.indexOf(spot);
-                    currentTrip.value.itinerary[currentDay.value].spots.splice(idx, 1);
-                };
-
-                // 重要：行程排序邏輯
-                const sortedSpots = computed(() => {
-                    if (currentDay.value === null || !currentTrip.value) return [];
-                    const spots = currentTrip.value.itinerary[currentDay.value].spots;
-                    return [...spots].sort((a, b) => a.time.localeCompare(b.time));
-                });
+                // 清單處理
+                const addShopItem = () => { if(newShopItem.value) { currentTrip.value.shoppingList.push({name: newShopItem.value, bought: false}); newShopItem.value = ''; } };
+                const addGourmetItem = () => { if(newGourmet.name) { currentTrip.value.gourmetList.push({ ...newGourmet, tried: false }); newGourmet.type = ''; newGourmet.name = ''; newGourmet.location = ''; } };
 
                 return {
-                    trips, currentTrip, showFormPage, isEditing, formTrip, activeTab, currentDay, showWeatherDetail, exchangeRate, destSuggestions, searchLoading, currencyList, categories, tabs, newShopItem,
-                    openForm, searchDestinations, selectSuggestion, saveTrip, selectTrip, uploadFile, addLinkPrompt, openDoc, removeSpot, sortedSpots,
+                    trips, currentTrip, showFormPage, isEditing, formTrip, activeTab, currentDay, showWeatherDetail, exchangeRate, destSuggestions, searchLoading, currencyList, categories, tabs, newShopItem, newGourmet,
+                    openForm, searchDestinations, selectSuggestion, saveTrip, selectTrip, uploadFile, openDoc, addShopItem, addGourmetItem,
+                    sortedSpots: computed(() => (currentDay.value !== null && currentTrip.value) ? [...currentTrip.value.itinerary[currentDay.value].spots].sort((a, b) => a.time.localeCompare(b.time)) : []),
                     totalTargetAmount: computed(() => currentTrip.value?.expenses.reduce((s, e) => s + (e.amount || 0), 0) || 0),
-                    totalBaseAmount: computed(() => {
-                        const total = currentTrip.value?.expenses.reduce((s, e) => s + (e.amount || 0), 0) || 0;
-                        return exchangeRate.value === 'N/A' ? 'N/A' : (total / exchangeRate.value).toFixed(2);
-                    }),
-                    currentViewTitle: computed(() => {
-                        const names = { 'itinerary': '行程規劃', 'documents': '行程文件', 'flight': '航班資訊', 'expense': '費用記帳', 'shopping': '購物清單' };
-                        return (currentDay.value !== null && activeTab.value === 'itinerary') ? `Day ${currentDay.value+1}` : names[activeTab.value];
-                    }),
+                    totalBaseAmount: computed(() => exchangeRate.value === 'N/A' ? 'N/A' : (computed(() => currentTrip.value?.expenses.reduce((s, e) => s + (e.amount || 0), 0) || 0).value / exchangeRate.value).toFixed(2)),
+                    currentViewTitle: computed(() => (currentDay.value !== null && activeTab.value === 'itinerary') ? `Day ${currentDay.value+1}` : tabs.find(t => t.id === activeTab.value).name),
                     currentDayWeather: computed(() => currentDay.value !== null ? currentTrip.value.itinerary[currentDay.value].weather : null),
-                    weatherAdvice: computed(() => {
-                        const dw = currentTrip.value?.itinerary[currentDay.value]?.weather;
-                        return dw && dw.rainProb > 40 ? "降雨機率高，記得攜帶雨具。" : "天氣良好，祝旅遊愉快！";
-                    }),
                     addSpot: () => currentTrip.value.itinerary[currentDay.value].spots.push({ time: "10:00", category: "景點", activity: "", address: "", note: "" }),
-                    addExpense: () => {
-                        const now = new Date();
-                        const timestamp = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-                        currentTrip.value.expenses.unshift({ item: '', amount: 0, note: '', timestamp });
-                    },
-                    addShopItem: () => { if(newShopItem.value) { currentTrip.value.shoppingList.push({name: newShopItem.value, bought: false}); newShopItem.value = ''; } },
+                    removeSpot: (spot) => currentTrip.value.itinerary[currentDay.value].spots.splice(currentTrip.value.itinerary[currentDay.value].spots.indexOf(spot), 1),
+                    addExpense: () => { const now = new Date(); currentTrip.value.expenses.unshift({ item: '', amount: 0, note: '', timestamp: `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}` }); },
                     addFlight: () => currentTrip.value.flights.push({ no: '', from: '', fromTime: '00:00', fromTerminal: '', to: '', toTime: '00:00', toTerminal: '' }),
+                    addLinkPrompt: () => { const name = prompt("連結名稱"), url = prompt("網址 (https://)"); if(name && url) currentTrip.value.documents.push({ name, type: 'link', value: url }); },
                     openGoogleMap: (q) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, '_blank'),
-                    deleteTrip: (id) => confirm('確定刪除此旅程？') && (trips.value = trips.value.filter(t => t.id !== id))
+                    deleteTrip: (id) => confirm('確定刪除？') && (trips.value = trips.value.filter(t => t.id !== id))
                 };
             }
         }).mount('#app');
